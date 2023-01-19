@@ -1,20 +1,69 @@
 // Le Avancierte CPP.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include "Task1/Task1.h"
 #include <iostream>
+#include <string>
+using std::cout;
+using std::cin;
+using std::string;
+
+const int currentTasks = 1;
+
+void ExplainPrograms();
+void PickProgram();
+void RunProgram(int i);
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    PickProgram();
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+void ExplainPrograms() 
+{
+    cout << "There are currently " << currentTasks << " tasks which can be run.";
+    cout << "\nEnter a number between 1 and " << currentTasks << " to run a task:\n";
+}
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+void PickProgram() 
+{
+    ExplainPrograms();
+    string userInput;
+    int taskNumber;
+    while (cin >> userInput)
+    {
+        taskNumber = -1;
+        try
+        {
+             taskNumber = std::stoi(userInput);
+        }
+        catch (const std::exception&)
+        {
+            cout << "Could not convert " << userInput << " to an integer.\n";
+        }
+
+        if (taskNumber > 0 && taskNumber <= currentTasks) {
+            RunProgram(taskNumber);
+            break;
+        }
+        else {
+            cout << userInput << " is not a valid task.\n";
+            ExplainPrograms();
+        }
+    }
+}
+
+void RunProgram(int i) 
+{
+    cout << "Starting task " << i << ".\n";
+    switch (i)
+    {
+        case 1: 
+            Task1 task;
+            task.RunTask1();
+        break;
+    default:
+        cout << "Could not find the task";
+        break;
+    }
+}
