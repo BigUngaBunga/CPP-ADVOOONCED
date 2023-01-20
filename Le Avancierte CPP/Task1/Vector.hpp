@@ -1,6 +1,6 @@
 #pragma once
 #define CHECK assert(Invariant());
-//#define InitialCapacity = 10;
+#define InitialCapacity 10
 #include <cstring>
 #include "String.h"
 #include <ostream>
@@ -14,7 +14,7 @@ private:
 	T* data;
 	size_t currentCapacity;
 	size_t currentSize;
-	const size_t InitialCapacity = 10;
+	//constexpr size_t InitialCapacity = 10;
 
 public:
 	Vector() noexcept;
@@ -85,11 +85,12 @@ public:
 /// </summary>
 
 template<class T>
-Vector<T>::Vector() noexcept : data(new T[InitialCapacity]), currentCapacity(sizeof(data)), currentSize(0) {CHECK}
+Vector<T>::Vector() noexcept : data(new T[InitialCapacity]), currentCapacity(InitialCapacity), currentSize(0) {CHECK}
 
 template<class T>
-Vector<T>::Vector(const char* other) : data(new T[strlen(other) * 2]), currentCapacity(sizeof(data)), currentSize(strlen(other))
+Vector<T>::Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
 { 
+	data = new T[currentCapacity];
 	for (size_t i = 0; i < currentSize; ++i)
 		data[i] = other[i];
 	CHECK 
@@ -149,7 +150,9 @@ size_t Vector<T>::capacity() const noexcept {
 template<class T>
 void Vector<T>::push_back(const T& value) {
 	if (currentSize >= currentCapacity)
-	{}//TODO double capacity
+	{
+		Reserve(currentCapacity * 2 + 1);
+	}
 	data[currentSize++] = value;
 	CHECK
 }
@@ -161,7 +164,7 @@ void Vector<T>::pop_back() {
 		return;
 	--currentSize;
 	if (currentSize <= currentCapacity / 4) {
-		//TODO halve capacity
+		Resize(currentCapacity / 2);
 	}
 	CHECK
 }
@@ -182,9 +185,28 @@ const T& Vector<T>::at(size_t i) const {
 	return operator[](i);
 }
 
-//void Reserve(size_t newCapacity);
-//void Resize(size_t newCapacity);
-//void ShrinkToFit();
+template<class T>
+void Vector<T>::Reserve(size_t newCapacity) {
+	if (newCapacity > currentCapacity)
+		Resize(newCapacity);
+}
+
+template<class T>
+void Vector<T>::Resize(size_t newCapacity) {
+	currentCapacity = newCapacity;
+	T* temporaryData = data;
+	data = new T[currentCapacity];
+	size_t newSize = currentCapacity > currentSize ? currentSize : currentCapacity;
+	std::copy(temporaryData, (temporaryData + newSize), data);
+	currentSize = newSize;
+	delete[] temporaryData;
+	CHECK
+}
+
+template<class T>
+void Vector<T>::ShrinkToFit() {
+	Resize(currentSize);
+}
 
  /// <summary>
  /// Iterators

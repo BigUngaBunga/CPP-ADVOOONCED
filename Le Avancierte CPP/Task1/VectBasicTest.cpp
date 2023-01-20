@@ -42,6 +42,15 @@ void TestBasic() {
         assert(v.size() == 0);
         assert(v.capacity() >= 0);
         assert(v.Invariant());
+
+        v.push_back('a');
+        v.push_back('b');
+        v.push_back('c');
+        v.push_back('d');
+        cout << "Before shrink " << v << " size " << v.size()<< " capacity " << v.capacity() << "\n";
+        v.ShrinkToFit();
+        cout << "After shrink " << v << " size " << v.size() << " capacity " << v.capacity() << "\n";
+
         FinishedTest(1);
     }
 #endif
@@ -105,11 +114,12 @@ void TestBasic() {
         assert(foo == "foox");
         bar.push_back('y');
         assert(bar == "y");
+
         //not for vector
-        //foo.pop_back();
-        //assert(foo == "foo");
-        //bar.pop_back();
-        //assert(bar == "");
+        foo.pop_back();
+        assert(foo == "foo");
+        bar.pop_back();
+        assert(bar == "");
 
         FinishedTest(6);
     }
