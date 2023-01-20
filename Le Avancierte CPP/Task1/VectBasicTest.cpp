@@ -31,6 +31,10 @@ struct Cbasic { int i; };
 #define BAR Vector<char> Bar("Bar");
 #define BAR0 Vector<char> Bar;
 
+void FinishedTest(int i) {
+    cout << "Finished test " << i << ".\n";
+}
+
 void TestBasic() {
 #if LEVEL>=1
     {
@@ -38,16 +42,18 @@ void TestBasic() {
         assert(v.size() == 0);
         assert(v.capacity() >= 0);
         assert(v.Invariant());
+        FinishedTest(1);
     }
 #endif
 #if LEVEL>=2
     {
         Vector<char> foo("foo");
         assert(foo.size() == 3);
-        cout << foo;
+        cout << foo << "\n";
         assert(foo == foo);
         Vector<char> bar("bar");
         assert(!(foo == bar));
+        FinishedTest(2);
     }
 #endif
 #if LEVEL>=3
@@ -59,6 +65,7 @@ void TestBasic() {
         assert(bar <= bar && foo >= foo);
         Vector<char> fooa("fooa");
         assert(foo<fooa&& fooa>foo);
+        FinishedTest(3);
     }
 #endif
 #if LEVEL>=4
@@ -67,10 +74,13 @@ void TestBasic() {
         Vector<char> foo2(foo);
         assert(foo2.Invariant() && foo2.size() == 3);
         assert(foo == foo2);
+        cout << "Foo2 before " << foo2 << "\n";
         foo2 = bar;
+        cout << "Foo2 after " << foo2 << "\n";
         assert(foo2 == bar);
         assert(foo2.size() == 3);
         assert(foo2.capacity() >= 3);
+        FinishedTest(4);
     }
 #endif
 #if LEVEL>=5
@@ -85,6 +95,7 @@ void TestBasic() {
         foo.at(1);
         bar2.at(2);
 
+        FinishedTest(5);
     }
 #endif
 #if LEVEL>=6
@@ -99,6 +110,8 @@ void TestBasic() {
         //assert(foo == "foo");
         //bar.pop_back();
         //assert(bar == "");
+
+        FinishedTest(6);
     }
 #endif
 #if LEVEL>=7
@@ -110,6 +123,8 @@ void TestBasic() {
         Bar = std::move(Fox2);
         assert(Fox2.Invariant() && Bar.Invariant());
         assert(Bar == "Fox" && Fox2 == "");
+
+        FinishedTest(7);
     }
 #endif
 #if LEVEL>=8
@@ -127,6 +142,7 @@ void TestBasic() {
         Bar = "Bar";
         swap(Fox, Bar);
         assert(Fox == "Bar" && Bar == "Fox");
+        FinishedTest(8);
     }
 #endif
 #if LEVEL>=9
@@ -134,6 +150,7 @@ void TestBasic() {
         FOX BAR;
         Fox.data();
         assert(&Fox[0] == Fox.data());
+        FinishedTest(9);
     }
 #endif
 
@@ -161,6 +178,8 @@ void TestBasic() {
         //    Vector<char>::const_reverse_iterator cit = foo.crbegin(); cit = foo.crend();
         //    cit = coo.rbegin(); cit = coo.rend();
         //}
+
+        FinishedTest(10);
     }
 #endif
 #if LEVEL>=11
@@ -178,6 +197,8 @@ void TestBasic() {
         Vector<Cbasic> clist;
         clist.push_back(Cbasic{ 1 });
         assert(clist.begin()->i == 1);
+
+        FinishedTest(11);
     }
 #endif
 #if LEVEL>=12
@@ -189,6 +210,8 @@ void TestBasic() {
         assert(*it1 == *it1--);
         assert(*it1 == *foo.begin());
         assert(*--it1 == *it1);
+
+        FinishedTest(12);
 
     }
 #endif
@@ -203,7 +226,7 @@ void TestBasic() {
         it2 = it2 - 2;
         assert(it2 == it);
         assert((it3 - it) == 2);
-
+        FinishedTest(13);
     }
 #endif
 }

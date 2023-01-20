@@ -20,6 +20,7 @@ using std::cout;
 
 void TestBasic();
 void TestVector();
+void FinishedTest(int i);
 
 void Task1::RunTask1() {
 #ifdef DBG_NEW
