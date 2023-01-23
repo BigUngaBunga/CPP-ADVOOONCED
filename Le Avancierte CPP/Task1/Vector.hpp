@@ -11,7 +11,7 @@ template <class T>
 class Vector {
 
 private:
-	T* data;
+	T* container;
 	size_t currentCapacity;
 	size_t currentSize;
 	//constexpr size_t InitialCapacity = 10;
@@ -21,25 +21,31 @@ public:
 	~Vector() noexcept;
 	Vector(const char* other);
 	Vector(const Vector& other);
+	Vector(Vector&& other) noexcept;
 	
 	Vector& operator=(const Vector& other);
+	Vector& operator=(Vector&& other) noexcept;
 
 	size_t size() const noexcept;
 	size_t capacity() const noexcept;
+
 	void push_back(const T& value);
 	void pop_back();
-	void Reserve(size_t newCapacity);
-	void Resize(size_t newCapacity);
-	void ShrinkToFit();
+	void reserve(size_t newCapacity);
+	void setCapacity(size_t newCapacity);
+	void resize(size_t newSize);
+	void shrinkToFit();
 
 
 	bool Empty() const;
 	bool Invariant() const;
+
 	T& operator[] (const size_t i);
 	const T& operator[] (size_t i) const;
-	
 	T& at(size_t i);
 	const T& at(size_t i) const;
+	T* data() noexcept;
+	const T* data() const noexcept;
 
 	T* Begin() const;
 	T* End() const;
@@ -78,6 +84,12 @@ public:
 			cout << other[i];
 		return cout;
 	}
+
+	friend void swap(Vector<T>& lhs, Vector<T>& rhs) {
+		Vector<T> temporaryVector = lhs;
+		lhs = rhs;
+		rhs = temporaryVector;
+	}
 };
 
 /// <summary>
@@ -85,43 +97,60 @@ public:
 /// </summary>
 
 template<class T>
-Vector<T>::Vector() noexcept : data(new T[InitialCapacity]), currentCapacity(InitialCapacity), currentSize(0) {CHECK}
+Vector<T>::Vector() noexcept : container(new T[InitialCapacity]), currentCapacity(InitialCapacity), currentSize(0) {CHECK}
 
 template<class T>
 Vector<T>::Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
 { 
-	data = new T[currentCapacity];
+	container = new T[currentCapacity];
 	for (size_t i = 0; i < currentSize; ++i)
-		data[i] = other[i];
+		container[i] = other[i];
 	CHECK 
 }
 
 template<class T>
 Vector<T>::~Vector() noexcept {
 	CHECK
-	delete[] data;
+	delete[] container;
 }
 
 template<class T>
 Vector<T>::Vector(const Vector& other) {
 	currentCapacity = other.capacity();
-	delete[] data;
-	data = new T[currentCapacity];
+	delete[] container;
+	container = new T[currentCapacity];
 	for (size_t i = 0; i < other.size(); i++) {
-		data[i] = other[i];
+		container[i] = other[i];
 		currentSize++;
 	}
 	CHECK
 }
 
+
+template<class T>
+Vector<T>::Vector(Vector&& other) noexcept {
+	swap(*this, other);
+	other.currentSize = 0;
+	CHECK
+}
+
+
 template<class T>
 Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
 	if (currentCapacity <= other.size()) {
-		//TODO öka storlek
+		resize(other.capacity());
 	}
 
-	std::copy(other.Begin(), other.End(), data);
+	std::copy(other.Begin(), other.End(), container);
 	currentSize = other.size();
+	CHECK
+	return *this;
+}
+
+template<class T>
+Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept{
+	swap(*this, other);
+	other.currentSize = 0;
 	CHECK
 	return *this;
 }
@@ -132,7 +161,7 @@ Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
 
 template<class T>
 bool Vector<T>::Invariant() const {
-	return size() <= capacity() && data != nullptr;
+	return size() <= capacity() && container != nullptr;
 }
 template<class T>
 bool Vector<T>::Empty() const {return !(size() > 0);}
@@ -151,9 +180,9 @@ template<class T>
 void Vector<T>::push_back(const T& value) {
 	if (currentSize >= currentCapacity)
 	{
-		Reserve(currentCapacity * 2 + 1);
+		reserve(currentCapacity * 2 + 1);
 	}
-	data[currentSize++] = value;
+	container[currentSize++] = value;
 	CHECK
 }
 
@@ -164,7 +193,7 @@ void Vector<T>::pop_back() {
 		return;
 	--currentSize;
 	if (currentSize <= currentCapacity / 4) {
-		Resize(currentCapacity / 2);
+		setCapacity(currentCapacity / 2);
 	}
 	CHECK
 }
@@ -186,26 +215,50 @@ const T& Vector<T>::at(size_t i) const {
 }
 
 template<class T>
-void Vector<T>::Reserve(size_t newCapacity) {
-	if (newCapacity > currentCapacity)
-		Resize(newCapacity);
-}
+T* Vector<T>::data() noexcept { return container; }
 
 template<class T>
-void Vector<T>::Resize(size_t newCapacity) {
+const T* Vector<T>::data() const noexcept { return container; }
+
+/// <summary>
+/// Size and capacity changes
+/// </summary>
+
+template<class T>
+void Vector<T>::reserve(size_t newCapacity) {
+	if (newCapacity > currentCapacity)
+		setCapacity(newCapacity);
+}
+
+
+template<class T>
+void Vector<T> ::setCapacity(size_t newCapacity) {
 	currentCapacity = newCapacity;
-	T* temporaryData = data;
-	data = new T[currentCapacity];
-	size_t newSize = currentCapacity > currentSize ? currentSize : currentCapacity;
-	std::copy(temporaryData, (temporaryData + newSize), data);
-	currentSize = newSize;
+	T* temporaryData = container;
+	container = new T[currentCapacity];
+	currentSize = currentCapacity > currentSize ? currentSize : currentCapacity;
+	std::copy(temporaryData, (temporaryData + currentSize), container);
 	delete[] temporaryData;
 	CHECK
 }
 
+
 template<class T>
-void Vector<T>::ShrinkToFit() {
-	Resize(currentSize);
+void Vector<T>::resize(size_t newSize) {
+	setCapacity(newSize);
+	if (currentSize < currentCapacity)
+	{
+		for (auto iterator = (Begin() + currentSize); iterator < (Begin() + currentCapacity); iterator++) {
+			*iterator = T();
+			++currentSize;
+		}
+	}
+	CHECK
+}
+
+template<class T>
+void Vector<T>::shrinkToFit() {
+	setCapacity(currentSize);
 }
 
  /// <summary>
@@ -213,10 +266,10 @@ void Vector<T>::ShrinkToFit() {
  /// </summary>
 
  template<class T>
- T* Vector<T>::Begin() const { return data; }
+ T* Vector<T>::Begin() const { return container; }
  
  template<class T>
- T* Vector<T>::End() const { return (data + currentSize); }
+ T* Vector<T>::End() const { return (container + currentSize); }
 
 
 
@@ -226,10 +279,10 @@ void Vector<T>::ShrinkToFit() {
 
 template<class T>
 T& Vector<T>::operator[] (size_t i) {
-	return *(data + i);
+	return *(container + i);
 }
 
 template<class T>
 const T& Vector<T>::operator[] (size_t i) const {
-	return *(data + i);
+	return *(container + i);
 }

@@ -48,7 +48,7 @@ void TestBasic() {
         v.push_back('c');
         v.push_back('d');
         cout << "Before shrink " << v << " size " << v.size()<< " capacity " << v.capacity() << "\n";
-        v.ShrinkToFit();
+        v.shrinkToFit();
         cout << "After shrink " << v << " size " << v.size() << " capacity " << v.capacity() << "\n";
 
         FinishedTest(1);
@@ -142,7 +142,7 @@ void TestBasic() {
         FOX BAR;
         Fox.reserve(100);
         assert(Fox.capacity() == 100);
-        Fox.shrink_to_fit();
+        Fox.shrinkToFit();
         assert(Fox.capacity() == 3);
         Fox.resize(10);
         assert(Fox.capacity() >= 10);
