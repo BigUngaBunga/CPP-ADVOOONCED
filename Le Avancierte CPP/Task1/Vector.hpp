@@ -6,6 +6,7 @@
 #include <ostream>
 
 using std::ostream;
+#pragma region Vector
 
 template <class T>
 class Vector {
@@ -50,6 +51,7 @@ public:
 	T* Begin() const;
 	T* End() const;
 
+	//TODO gör om till <=>
 	//Friend functions
 	friend bool operator== (const Vector& lhs, const Vector& rhs) {
 		if (lhs.size() != rhs.size())
@@ -265,6 +267,7 @@ void Vector<T>::shrinkToFit() {
  /// Iterators
  /// </summary>
 
+//TODO byt ut till riktiga iteratorer
  template<class T>
  T* Vector<T>::Begin() const { return container; }
  
@@ -286,3 +289,35 @@ template<class T>
 const T& Vector<T>::operator[] (size_t i) const {
 	return *(container + i);
 }
+#pragma endregion
+
+#pragma region Iterator
+template<class T>
+class Iterator
+{
+public:
+	Iterator(T* pointer);
+	Iterator();
+	~Iterator();
+
+private:
+	T* pointer;
+	int position;
+};
+
+template<class T>
+Iterator<T>::Iterator(T* pointer) : pointer(pointer){}
+
+template<class T>
+Iterator<T>::Iterator() : pointer(nullptr){}
+
+
+template<class T>
+Iterator<T>::~Iterator()
+{
+	//TODO tänk över om pekaren skall bort. Den fås av föremål som vill behålla sina pekare
+	//if (pointer != nullptr)
+	//	delete pointer;
+}
+
+#pragma endregion
