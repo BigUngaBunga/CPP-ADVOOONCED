@@ -43,5 +43,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Task1\Task1.h" />
+    <ClInclude Include="Task1\Iterator.hpp" />
   </ItemGroup>
 </Project>

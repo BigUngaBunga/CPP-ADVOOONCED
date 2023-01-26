@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Dhelper.h" />
+    <ClInclude Include="Task1\Iterator.hpp" />
     <ClInclude Include="Task1\Task1.h" />
     <ClInclude Include="Task1\TestLevel.h" />
     <ClInclude Include="Task1\VectIterTest.h" />
