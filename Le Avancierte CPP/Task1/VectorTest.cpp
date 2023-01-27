@@ -309,7 +309,7 @@ void TestVector() {
     Print("tested push back again... again");
 
 
-    cout << "\nTestVector klar\n";
+    cout << "TestVector klar\n\n";
 
 }
 
@@ -374,6 +374,9 @@ void TestRolOp() {
     Vector<char> vecA("A");
     Vector<char> vecAxxx("Axxx");
     Vector<char> vecB("B");
+
+    bool biggusMaximus = vecAxxx > vecB;
+    bool biggusMinimus = vecAxxx < vecB;
 
     { bool f = RelTest(vecA, vecAxxx, < , >= ); assert(f); }
     { bool f = RelTest(vecAxxx, vecA, > , <= ); assert(f); }

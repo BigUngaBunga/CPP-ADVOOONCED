@@ -78,8 +78,6 @@ public:
 
 
 
-	//TODO gör om till <=>
-	//Friend functions
 	friend bool operator== (const Vector& lhs, const Vector& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
@@ -90,23 +88,17 @@ public:
 		return true;
 	}
 
-	friend bool operator< (const Vector& lhs, const Vector& rhs) {
-		if (lhs.size() < rhs.size())
-			return true;
-		for (size_t i = 0; i < lhs.size(); i++)
-			if (lhs[i] < rhs[i])
-				return true;
+	friend auto operator<=> (const Vector& lhs, const Vector& rhs) {
+		size_t smallestSize = std::min(lhs.size(), rhs.size());
+		for (size_t i = 0; i < smallestSize; i++) {
+			auto comparison = lhs.at(i) <=> rhs.at(i);
+			if (comparison != 0)
+				return comparison;
+		}
 
-		return false;
+
+		return lhs.size() <=> rhs.size();
 	}
-
-	friend bool operator<= (const Vector & lhs, const Vector & rhs) { return !(lhs > rhs); }
-
-	friend bool operator> (const Vector& lhs, const Vector& rhs) { return !(lhs < rhs || lhs.size() == rhs.size()); }
-
-	friend bool operator>= (const Vector& lhs, const Vector& rhs) { return !(lhs < rhs); }
-
-	friend bool operator!= (const Vector& lhs, const Vector& rhs) { return !(lhs == rhs); }
 
 	friend std::ostream& operator<<(std::ostream& cout, const Vector& other) {
 		for (size_t i = 0; i < other.size(); ++i)
@@ -128,7 +120,7 @@ Vector<T>::Vector() noexcept : container(), currentCapacity(0), currentSize(0) {
 
 template<class T>
 Vector<T>::Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
-{ 
+{
 	container = new T[currentCapacity];
 	for (size_t i = 0; i < currentSize; ++i)
 		container[i] = other[i];
@@ -238,30 +230,30 @@ void Vector<T>::shrinkToFit() {
 #pragma region Overloaded operators
  template<class T>
  Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
-	 if (currentCapacity <= other.size()) {
-		 setCapacity(other.capacity());
-	 }
+	if (currentCapacity <= other.size()) {
+		setCapacity(other.capacity());
+	}
 
-	 std::copy(other.begin(), other.end(), container);
-	 currentSize = other.size();
-	 CHECK
-		 return *this;
- }
+	std::copy(other.begin(), other.end(), container);
+	currentSize = other.size();
+	CHECK
+		return *this;
+}
 
- template<class T>
- Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept {
+template<class T>
+Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept {
+	delete[] container;
 	container = std::move(other.container);
 	currentCapacity = std::move(other.currentCapacity);
 	currentSize = std::move(other.currentSize);
-
 	other.container = nullptr;
 	other.currentCapacity = 0;
 	other.currentSize = 0;
 	CHECK
 	return *this;
- }
+}
  
- template<class T>
+template<class T>
 T& Vector<T>::operator[] (size_t i) {
 	return *(container + i);
 }

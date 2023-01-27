@@ -1,8 +1,8 @@
 #pragma once
 
-#define LEVEL 81
+#define LEVEL 99
 #define G_BETYG
-//#define VG_BETYG
+#define VG_BETYG
 
 //Tanken är att man höjer Level successivt till 12
 //Sen kan man sätta level till 99

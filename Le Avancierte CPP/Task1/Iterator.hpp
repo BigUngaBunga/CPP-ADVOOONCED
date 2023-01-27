@@ -20,7 +20,7 @@ public:
 
 	reference operator*() const { return *data; }
 	pointer operator->() const { return data; }
-	reference operator[](size_t i) const { return data[i]; }
+	reference operator[](size_t i) const { return data[i * direction]; }
 	Iterator operator++(int change) {
 		pointer oldData = data;
 		move(1);
@@ -32,23 +32,25 @@ public:
 		return Iterator(oldData);
 	}
 	Iterator operator+(difference_type value) const {
-		return Iterator(data + value);
+		return Iterator(data + value * direction);
 	}
 	Iterator operator-(difference_type value) const {
-		return Iterator(data - value);
+		return Iterator(data - value * direction);
 	}
 	Iterator& operator++() { move(1); return *this; }
 	Iterator& operator--() { move(-1); return *this; }
 	Iterator& operator+=(difference_type value) { move(value); return *this; }
 	Iterator& operator-=(difference_type value) { move(-value); return *this; }
-	difference_type operator-(const Iterator& other) const { return data - other.data; }
+	difference_type operator-(const Iterator& other) const { return (data - other.data) * direction; }
 
 	friend bool operator== (const Iterator& lhs, const Iterator& rhs) {
-		return lhs.operator*() == rhs.operator*();
+		return operator<=>(lhs, rhs) == 0;
 	}
 
 	friend auto operator<=> (const Iterator& lhs, const Iterator& rhs) {
-		return lhs - rhs;
+		if (direction == -1)
+			return rhs.operator->() <=> lhs.operator->();
+		return  lhs.operator->() <=> rhs.operator->();
 	}
 
 private:
