@@ -6,9 +6,9 @@
 #include "String.h"
 #include <ostream>
 #include "Iterator.hpp"
-
 using std::ostream;
 
+#pragma region Iterator Types
 template <class T>
 using iterator = Iterator<T, 1>;
 template <class T>
@@ -17,6 +17,7 @@ template <class T>
 using reverse_iterator = Iterator<T, -1>;
 template <class T>
 using const_reverse_iterator = Iterator<const T, -1>;
+#pragma endregion
 
 template <class T>
 class Vector {
@@ -63,6 +64,7 @@ public:
 	T* data() noexcept;
 	const T* data() const noexcept;
 
+	#pragma region iterators
 	iterator begin();
 	iterator end();
 	const_iterator begin() const;
@@ -75,9 +77,9 @@ public:
 	const_reverse_iterator rend() const;
 	const_reverse_iterator crbegin() const;
 	const_reverse_iterator crend() const;
+	#pragma endregion
 
-
-
+	#pragma region friends
 	friend bool operator== (const Vector& lhs, const Vector& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
@@ -111,6 +113,7 @@ public:
 		lhs = std::move(rhs);
 		rhs = std::move(temporaryVector);
 	}
+	#pragma endregion
 };
 
 #pragma region Constructors and destructors
@@ -160,7 +163,6 @@ void Vector<T>::reserve(size_t newCapacity) {
 		setCapacity(newCapacity);
 }
 
-
 template<class T>
 void Vector<T> ::setCapacity(size_t newCapacity) {
 	currentCapacity = newCapacity;
@@ -171,7 +173,6 @@ void Vector<T> ::setCapacity(size_t newCapacity) {
 	delete[] temporaryData;
 	CHECK
 }
-
 
 template<class T>
 void Vector<T>::resize(size_t newSize) {
@@ -254,36 +255,30 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept {
 }
  
 template<class T>
-T& Vector<T>::operator[] (size_t i) {
-	return *(container + i);
-}
+T& Vector<T>::operator[] (size_t i) { return *(container + i); }
 
 template<class T>
-const T& Vector<T>::operator[] (size_t i) const {
-	return *(container + i);
-}
+const T& Vector<T>::operator[] (size_t i) const { return *(container + i); }
 #pragma endregion
 
-template<class T>
-bool Vector<T>::Invariant() const {
-	bool isValid = size() <= capacity();
-	if (capacity() != 0)
-		isValid = isValid && container != nullptr;
-	return isValid;
-}
+#pragma region Getters
 template<class T>
 bool Vector<T>::Empty() const { return !(size() > 0); }
 
 template<class T>
-size_t Vector<T>::size() const noexcept {
-	return currentSize;
-}
+size_t Vector<T>::size() const noexcept { return currentSize; }
 
 template<class T>
-size_t Vector<T>::capacity() const noexcept {
-	return currentCapacity;
-}
+size_t Vector<T>::capacity() const noexcept { return currentCapacity; }
 
+template<class T>
+T* Vector<T>::data() noexcept { return container; }
+
+template<class T>
+const T* Vector<T>::data() const noexcept { return container; }
+#pragma endregion
+
+#pragma region Access
 template<class T>
 void Vector<T>::push_back(const T& value) {
 	if (currentSize >= currentCapacity)
@@ -291,7 +286,6 @@ void Vector<T>::push_back(const T& value) {
 	container[currentSize++] = value;
 	CHECK
 }
-
 
 template<class T>
 void Vector<T>::pop_back() {
@@ -316,9 +310,14 @@ const T& Vector<T>::at(size_t i) const {
 		throw std::out_of_range("boot too big");
 	return operator[](i);
 }
+#pragma endregion
 
+#pragma region Debug
 template<class T>
-T* Vector<T>::data() noexcept { return container; }
-
-template<class T>
-const T* Vector<T>::data() const noexcept { return container; }
+bool Vector<T>::Invariant() const {
+	bool isValid = size() <= capacity();
+	if (capacity() != 0)
+		isValid = isValid && container != nullptr;
+	return isValid;
+}
+#pragma endregion
