@@ -29,12 +29,12 @@ bool operator==(const Vector<X>& lhs, const char* rhs) {
 
 template <class X>
 struct IsConstOrConstRef {
-    static const bool value = std::is_const<std::remove_reference<X>::type>::value;
+    static const bool value = std::is_const_v<std::remove_reference_t<X>>;
 };
 
 template <class X>
 bool IsConstOrConstRefFun(X& x) {
-    return std::is_const<std::remove_reference<X>::type>::value;
+    return std::is_const_v<std::remove_reference_t<X>>;
 };
 
 template<class X>
@@ -86,6 +86,11 @@ void TestPushBack() {
 
 void TestRolOp();
 void TestCapacity();
+void Print(std::string message);
+
+void Print(std::string message) {
+    cout << message << "\n";
+}
 
 void TestVector() {
     {//Vector<char>(char *)
@@ -96,6 +101,7 @@ void TestVector() {
         CheckVec(Foo); CheckVec(FooC);
         CheckVec(Bar); CheckVec(BarC);
     }
+    Print("tested vector<char>");
     {//check empty vectors;
         Vector<char> v1;
         assert(v1.capacity() == 0);
@@ -103,11 +109,15 @@ void TestVector() {
         Vector<char> v2(v1);
         assert(v2 == "");
     }
+    Print("tested empty vectors");
+
     {//Move constructor
         Vector<char> a("foo");
         Vector<char> b(std::move(a));
         assert(b == "foo" && a.data() == nullptr);
     }
+    Print("tested move constructor");
+
     {//Vector<char>(Copy constructor)
         Vector<char> v1("foo"); assert(v1 == "foo");
         Vector<char> v2(v1); assert(v2 == "foo");
@@ -128,6 +138,8 @@ void TestVector() {
         assert(v3[0] == 'h');
         v3[1] = 'y'; assert(v2[1] == 'e');
     }
+    Print("tested copy constructor");
+
     {//Kedjat assignment
         Vector<char> v1("foo"), v2("bar"), v3("hej");
         v3 = v2 = v1;
@@ -135,6 +147,7 @@ void TestVector() {
         assert(v3 == v2);
         assert(v1 == v2);
     }
+    Print("tested chained assignments");
 
 #ifdef VG_BETYG
     {//No extra realloc
@@ -143,6 +156,8 @@ void TestVector() {
         v1 = v2;
         assert(xxx == v1.data());
     }
+    Print("tested no extra reallocation");
+
 #endif
 
     {// Move assignment
@@ -163,6 +178,8 @@ void TestVector() {
         Bar.push_back('x');
         assert(Bar.capacity() > 0);
     }
+    Print("tested move assignment");
+
 
     {//-	operator[](size_t i) som indexerar utan range check.
         Vector<char> vecFoo("Foo");
@@ -180,6 +197,8 @@ void TestVector() {
         assert(IsConstOrConstRefFun(vecBarC[1]));
         assert(vecBarC[1] == 'a');
     }
+    Print("tested operator[] ");
+
     {//-	at(size_t i) som indexerar med range check
         Vector<char> vecBar("Bar");
         const Vector<char> vecBarC("Bar");
@@ -214,6 +233,8 @@ void TestVector() {
         assert(vecBarC.at(1) == 'a');
         assert(IsConstOrConstRefFun(vecBarC.at(1)));
     }
+    Print("tested indexing with at()");
+
 
     // data
     {
@@ -224,6 +245,8 @@ void TestVector() {
         assert(!IsConstOrConstRefFun(*vecBar.data()));
         assert(IsConstOrConstRefFun(*vecBarC.data()));
     }
+    Print("tested data");
+
 
     //-	push_back(char c) lägger till ett tecken sist.
     {
@@ -233,6 +256,7 @@ void TestVector() {
         vecBar.push_back('a');
         assert(vecBar == "Bara");
     }
+    Print("tested push_back");
 
 
     // resize
@@ -240,7 +264,7 @@ void TestVector() {
         Vector<char> vecBar("Bar");
         const Vector<char> vecBarC("Bar");
         //size up
-        vecBar.shrink_to_fit();
+        vecBar.shrinkToFit();
         auto buf = vecBar.data();
         vecBar.resize(6);
         assert(vecBar[2] == 'r' && vecBar[3] == 0 && vecBar[4] == 0 && vecBar[5] == 0);
@@ -249,11 +273,15 @@ void TestVector() {
         vecBar.resize(5);
         assert(buf == vecBar.data() && vecBar.capacity() >= 6 && vecBar.size() == 5);
     }
+    Print("tested resize");
+
     {//minitest push_back &&
         Vector<char> vecBar("Bar");
         vecBar.push_back('a');
         assert(vecBar == "Bara");
     }
+    Print("tested push_back again");
+
 
     //-	operator== 
     //testas överallt!
@@ -269,10 +297,17 @@ void TestVector() {
         swap(Foo, Bar);
         assert(fptr == Bar.data() && bptr == Foo.data());
     }
+    Print("tested swap");
 
     TestRolOp();
+    Print("tested RolOp ??");
+
     TestCapacity();
+    Print("tested capacity");
+
     TestPushBack();
+    Print("tested push back again... again");
+
 
     cout << "\nTestVector klar\n";
 
@@ -387,7 +422,7 @@ void TestCapacity() {
     cap = vecBar.capacity();
     siz = vecBar.size();
 
-    vecBar.shrink_to_fit();
+    vecBar.shrinkToFit();
     assert(internalBuf != &vecBar[0]);
     assert(vecBar.capacity() == vecBar.size());
     assert(vecBar == "hej");

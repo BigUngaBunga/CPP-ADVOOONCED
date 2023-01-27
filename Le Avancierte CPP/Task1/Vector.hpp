@@ -1,6 +1,7 @@
 #pragma once
 #define CHECK assert(Invariant());
 #define InitialCapacity 10
+#include <cassert>
 #include <cstring>
 #include "String.h"
 #include <ostream>
@@ -62,12 +63,16 @@ public:
 	T* data() noexcept;
 	const T* data() const noexcept;
 
-	iterator begin() const;
-	iterator end() const;
+	iterator begin();
+	iterator end();
+	const_iterator begin() const;
+	const_iterator end() const;
 	const_iterator cbegin() const;
 	const_iterator cend() const;
-	reverse_iterator rbegin() const;
-	reverse_iterator rend() const;
+	reverse_iterator rbegin();
+	reverse_iterator rend();
+	const_reverse_iterator rbegin() const;
+	const_reverse_iterator rend() const;
 	const_reverse_iterator crbegin() const;
 	const_reverse_iterator crend() const;
 
@@ -110,18 +115,16 @@ public:
 	}
 
 	friend void swap(Vector<T>& lhs, Vector<T>& rhs) {
-		auto temporaryVector(lhs);
-		lhs = rhs;
-		rhs = temporaryVector;
+		auto temporaryVector(std::move(lhs));
+		lhs = std::move(rhs);
+		rhs = std::move(temporaryVector);
 	}
 };
 
 #pragma region Constructors and destructors
 
-
-
 template<class T>
-Vector<T>::Vector() noexcept : container(new T[0]), currentCapacity(0), currentSize(0) { CHECK }
+Vector<T>::Vector() noexcept : container(), currentCapacity(0), currentSize(0) { }
 
 template<class T>
 Vector<T>::Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
@@ -153,10 +156,7 @@ Vector<T>::Vector(const Vector& other) {
 
 template<class T>
 Vector<T>::Vector(Vector&& other) noexcept {
-	swap(*this, other);
-	//Fails the tests without this
-	other.currentCapacity = 0;
-	other.currentSize = 0;
+	*this = std::move(other);
 	CHECK
 }
 #pragma endregion
@@ -183,21 +183,16 @@ void Vector<T> ::setCapacity(size_t newCapacity) {
 
 template<class T>
 void Vector<T>::resize(size_t newSize) {
-	setCapacity(newSize);
-	if (currentSize < currentCapacity)
+	if (newSize >= currentCapacity)
+		setCapacity(newSize * 2 + 1);
+
+	if (currentSize < newSize)
 	{
-		auto iteratorious = begin();
-		auto iteratorious1 = iteratorious;
-		iteratorious1 += 1;
-		auto iteratorius4 = begin() + 4;
-		auto sizeIterator = begin() + currentSize;
-		auto lessThancapacityIterator = begin() + (currentCapacity - 1);
-		auto capacityIterator = begin() + currentCapacity;
-		for (auto iterator = (begin() + currentSize); iterator < (begin() + currentCapacity); iterator++) {
+		for (auto iterator = (begin() + currentSize); iterator < (begin() + newSize); iterator++) {
 			*iterator = T();
-			++currentSize;
 		}
 	}
+	currentSize = newSize;
 	CHECK
 }
 
@@ -209,26 +204,32 @@ void Vector<T>::shrinkToFit() {
 
 #pragma region Iterators
  template<class T>
- iterator<T> Vector<T>::begin() const { return iterator(container); }
- 
+ iterator<T> Vector<T>::begin() { return iterator(container); }
  template<class T>
- iterator<T> Vector<T>::end() const { return iterator(container + currentSize); }
+ iterator<T> Vector<T>::end() { return iterator(container + currentSize); }
+
+ template<class T>
+ const_iterator<T> Vector<T>::begin() const { return const_iterator(container); }
+ template<class T>
+ const_iterator<T> Vector<T>::end() const { return const_iterator(container + currentSize); }
 
  template<class T>
  const_iterator<T> Vector<T>::cbegin() const { return const_iterator(container); }
- 
  template<class T>
  const_iterator<T> Vector<T>::cend() const { return const_iterator(container + currentSize); }
  
  template<class T>
- reverse_iterator<T> Vector<T>::rbegin() const { return reverse_iterator(container + currentSize - 1); }
+ reverse_iterator<T> Vector<T>::rbegin() { return reverse_iterator(container + currentSize - 1); }
+ template<class T>
+ reverse_iterator<T> Vector<T>::rend() { return reverse_iterator(container - 1); }
  
  template<class T>
- reverse_iterator<T> Vector<T>::rend() const { return reverse_iterator(container - 1); }
- 
+ const_reverse_iterator<T> Vector<T>::rbegin() const { return const_reverse_iterator(container + currentSize - 1); }
+ template<class T>
+ const_reverse_iterator<T> Vector<T>::rend() const { return const_reverse_iterator(container - 1); }
+
  template<class T>
  const_reverse_iterator<T> Vector<T>::crbegin() const { return const_reverse_iterator(container + currentSize - 1); }
- 
  template<class T>
  const_reverse_iterator<T> Vector<T>::crend() const { return const_reverse_iterator(container - 1); }
 
@@ -249,11 +250,15 @@ void Vector<T>::shrinkToFit() {
 
  template<class T>
  Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept {
-	 swap(*this, other);
-	 other.currentCapacity = 0;
-	 other.currentSize = 0;
-	 CHECK
-		 return *this;
+	container = std::move(other.container);
+	currentCapacity = std::move(other.currentCapacity);
+	currentSize = std::move(other.currentSize);
+
+	other.container = nullptr;
+	other.currentCapacity = 0;
+	other.currentSize = 0;
+	CHECK
+	return *this;
  }
  
  template<class T>
@@ -269,7 +274,10 @@ const T& Vector<T>::operator[] (size_t i) const {
 
 template<class T>
 bool Vector<T>::Invariant() const {
-	return size() <= capacity() && container != nullptr;
+	bool isValid = size() <= capacity();
+	if (capacity() != 0)
+		isValid = isValid && container != nullptr;
+	return isValid;
 }
 template<class T>
 bool Vector<T>::Empty() const { return !(size() > 0); }
@@ -305,17 +313,15 @@ void Vector<T>::pop_back() {
 
 template<class T>
 T& Vector<T>::at(size_t i) {
-	if (i < 0 && i >= currentSize) {
+	if (i >= currentSize)
 		throw std::out_of_range("boot to big");
-	}
 	return operator[](i);
 }
 
 template<class T>
 const T& Vector<T>::at(size_t i) const {
-	if (i < 0 && i >= currentSize) {
+	if (i >= currentSize)
 		throw std::out_of_range("boot too big");
-	}
 	return operator[](i);
 }
 

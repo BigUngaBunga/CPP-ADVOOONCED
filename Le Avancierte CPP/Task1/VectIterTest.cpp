@@ -29,7 +29,7 @@ template<class T>
 struct IsSameFun {
     template<class V>
     static void e(V v) {
-        static_assert(std::is_same<T, V>::value, "Not right return type, look where IsSameFun is used!");
+        static_assert(std::is_same_v<T, V>, "Not right return type, look where IsSameFun is used!");
     }
 };
 
@@ -375,25 +375,38 @@ void TestIter() {
     //-	*it, ++it, it++, (it+i), it[i], == och !=
     //also test most begin and end versions
     TestIterPart_();
+    cout << "Tested normal iterators \n";
     TestIterPartC_();
+    cout << "Tested constant iterators\n";
     TestIterPartR_();
+    cout << "Tested reverse iterators\n";
     TestIterPartCR_();
+    cout << "Tested constant reverse iterators\n";
 
     //Constructorer och assignment
     TestConstrAssignm();
+    cout << "Tested constructors anssignment iterators\n";
+
 
     //Test * ->
     TestAccess();
+    cout << "Tested access iterators\n";
+
 
     //Test ==, !=, <, ...
     TestRelOp();
+    cout << "Tested relational operators iterators\n";
+
 
     //typdefs för iterator, const_iterator,  reverse_iterator och const_revers_iterator
     //   tested with static_assert below
 
     //Prova att sortera
     TestIterInAlg();
+    cout << "Tested iterators in algorithms\n";
+
     TestRevIterInAlg();
+    cout << "Tested reverse iterators in algorithms\n";
 
     cout << "\nTest för (Väl-)Godkänt Iterator klar\n";
 

@@ -3,13 +3,14 @@
 template<class T, int direction>
 class Iterator
 {
+
+public:
 	using difference_type = std::ptrdiff_t;
 	using value_type = T;
 	using pointer = T*;
 	using reference = T&;
 	using iterator_category = std::random_access_iterator_tag;
 
-public:
 	Iterator(pointer _pointer);
 	Iterator(const Iterator<T, direction>& other);
 	Iterator();
@@ -17,31 +18,24 @@ public:
 
 	Iterator& operator=(const Iterator& other) { data = other.data; return *this; }
 
-	//T& operator*() const { return direction == -1 ? *(data - 1) : *data; }
-	//T* operator->() const { return direction == -1 ? (data - 1) : data; }
-	//T& operator[](size_t i) const { return direction == -1 ? (data - 1)[i] : data[i]; }
-
-	T& operator*() const { return *data; }
-	T* operator->() const { return data; }
-	T& operator[](size_t i) const { return data[i]; }
+	reference operator*() const { return *data; }
+	pointer operator->() const { return data; }
+	reference operator[](size_t i) const { return data[i]; }
 	Iterator operator++(int change) {
-		auto temporary = this;
+		pointer oldData = data;
 		move(1);
-		return *temporary;
+		return Iterator(oldData);
 	}
 	Iterator operator--(int change) {
-		auto temporary = this;
+		pointer oldData = data;
 		move(-1);
-		return *temporary;
+		return Iterator(oldData);
 	}
 	Iterator operator+(difference_type value) const {
-		/*auto temporary = this;
-		temporary += value;*/
-		return getMovedIterator(value);
+		return Iterator(data + value);
 	}
 	Iterator operator-(difference_type value) const {
-		auto temporary(this);
-		return *(temporary -= value);
+		return Iterator(data - value);
 	}
 	Iterator& operator++() { move(1); return *this; }
 	Iterator& operator--() { move(-1); return *this; }
@@ -60,21 +54,13 @@ public:
 private:
 	pointer data;
 	void move(difference_type distance) { data += distance * direction; }
-	Iterator<T, direction> getMovedIterator(difference_type distance) const {
-		auto newData = data;
-		newData += distance;
-		//Iterator<T, direction> temporary(*this);
-		//Iterator<T, direction> temporary2(*this);
-		Iterator<T, direction> temporary3(data);
-		Iterator<T, direction> temporary4(newData);
-		
-		return temporary4;
-	}
 };
 
 #pragma region Constructors
 template<class T, int direction>
-Iterator<T, direction>::Iterator(pointer _pointer) : data(_pointer) {}
+Iterator<T, direction>::Iterator(pointer _pointer) : data(_pointer) {
+	data = _pointer;
+}
 
 template<class T, int direction>
 Iterator<T, direction>::Iterator(const Iterator<T, direction>& other) : data(other.data) {}
