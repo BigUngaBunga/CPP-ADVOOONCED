@@ -186,7 +186,14 @@ void Vector<T>::resize(size_t newSize) {
 	setCapacity(newSize);
 	if (currentSize < currentCapacity)
 	{
-		for (auto iterator = begin() + currentSize; iterator < (begin() + currentCapacity); iterator++) {
+		auto iteratorious = begin();
+		auto iteratorious1 = iteratorious;
+		iteratorious1 += 1;
+		auto iteratorius4 = begin() + 4;
+		auto sizeIterator = begin() + currentSize;
+		auto lessThancapacityIterator = begin() + (currentCapacity - 1);
+		auto capacityIterator = begin() + currentCapacity;
+		for (auto iterator = (begin() + currentSize); iterator < (begin() + currentCapacity); iterator++) {
 			*iterator = T();
 			++currentSize;
 		}
@@ -201,13 +208,29 @@ void Vector<T>::shrinkToFit() {
 #pragma endregion
 
 #pragma region Iterators
-//TODO byt ut till riktiga iteratorer
  template<class T>
- iterator<T> Vector<T>::begin() const { return iterator<T>(container); }
+ iterator<T> Vector<T>::begin() const { return iterator(container); }
  
  template<class T>
- iterator<T> Vector<T>::end() const { return iterator<T>(container + currentSize); }
+ iterator<T> Vector<T>::end() const { return iterator(container + currentSize); }
 
+ template<class T>
+ const_iterator<T> Vector<T>::cbegin() const { return const_iterator(container); }
+ 
+ template<class T>
+ const_iterator<T> Vector<T>::cend() const { return const_iterator(container + currentSize); }
+ 
+ template<class T>
+ reverse_iterator<T> Vector<T>::rbegin() const { return reverse_iterator(container + currentSize - 1); }
+ 
+ template<class T>
+ reverse_iterator<T> Vector<T>::rend() const { return reverse_iterator(container - 1); }
+ 
+ template<class T>
+ const_reverse_iterator<T> Vector<T>::crbegin() const { return const_reverse_iterator(container + currentSize - 1); }
+ 
+ template<class T>
+ const_reverse_iterator<T> Vector<T>::crend() const { return const_reverse_iterator(container - 1); }
 
 #pragma endregion
 
@@ -215,10 +238,10 @@ void Vector<T>::shrinkToFit() {
  template<class T>
  Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
 	 if (currentCapacity <= other.size()) {
-		 resize(other.capacity());
+		 setCapacity(other.capacity());
 	 }
 
-	 std::copy(other.Begin(), other.End(), container);
+	 std::copy(other.begin(), other.end(), container);
 	 currentSize = other.size();
 	 CHECK
 		 return *this;
