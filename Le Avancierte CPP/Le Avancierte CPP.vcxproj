@@ -129,7 +129,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Le Avancierte CPP.cpp" />
-    <ClCompile Include="Task1\Task1.cpp" />
     <ClCompile Include="Task1\Test1.cpp" />
     <ClCompile Include="Task1\VectBasicTest.cpp" />
     <ClCompile Include="Task1\VectIterTest.cpp" />
@@ -142,6 +141,7 @@
     <ClInclude Include="Task1\TestLevel.h" />
     <ClInclude Include="Task1\VectIterTest.h" />
     <ClInclude Include="Task1\Vector.hpp" />
+    <ClInclude Include="Task2\Task2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

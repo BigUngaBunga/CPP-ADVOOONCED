@@ -25,9 +25,6 @@
     <ClCompile Include="Task1\Test1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Task1\Task1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Vector.hpp">
@@ -44,5 +41,6 @@
     </ClInclude>
     <ClInclude Include="Task1\Task1.h" />
     <ClInclude Include="Task1\Iterator.hpp" />
+    <ClInclude Include="Task2\Task2.h" />
   </ItemGroup>
 </Project>

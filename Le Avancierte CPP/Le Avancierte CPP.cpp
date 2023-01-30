@@ -2,13 +2,14 @@
 //
 
 #include "Task1/Task1.h"
+#include "Task2/Task2.h"
 #include <iostream>
 #include <string>
 using std::cout;
 using std::cin;
 using std::string;
 
-const int currentTasks = 1;
+const int currentTasks = 2;
 
 void ExplainPrograms();
 void PickProgram();
@@ -59,8 +60,12 @@ void RunProgram(int i)
     switch (i)
     {
         case 1: 
-            Task1 task;
-            task.RunTask1();
+            Task1 task1;
+            task1.RunTask1();
+        break;
+        case 2:
+            Task2 task2;
+            task2.RunTask2();
         break;
     default:
         cout << "Could not find the task";
