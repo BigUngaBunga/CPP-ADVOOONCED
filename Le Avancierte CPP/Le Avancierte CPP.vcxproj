@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PublicIncludeDirectories>C:\Users\truls\Documents\GitHub\CPP-ADVOOONCED\Le Avancierte CPP;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -105,6 +108,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\truls\Documents\GitHub\CPP-ADVOOONCED\Le Avancierte CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,15 +137,24 @@
     <ClCompile Include="Task1\VectBasicTest.cpp" />
     <ClCompile Include="Task1\VectIterTest.cpp" />
     <ClCompile Include="Task1\VectorTest.cpp" />
+    <ClCompile Include="DebugPrinting.cpp" />
+    <ClCompile Include="Task2\Test2.cpp" />
+    <ClCompile Include="Task2\TestBasicPointer.cpp" />
+    <ClCompile Include="Task2\TestSharedG.cpp" />
+    <ClCompile Include="Task2\TestShWeakVG.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Dhelper.h" />
     <ClInclude Include="Task1\Iterator.hpp" />
-    <ClInclude Include="Task1\Task1.h" />
     <ClInclude Include="Task1\TestLevel.h" />
     <ClInclude Include="Task1\VectIterTest.h" />
     <ClInclude Include="Task1\Vector.hpp" />
-    <ClInclude Include="Task2\Task2.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="DebugPrinting.h" />
+    <ClInclude Include="Task2\PointerCounter.hpp" />
+    <ClInclude Include="Task2\SharedPtr.hpp" />
+    <ClInclude Include="Task2\TestLevel.h" />
+    <ClInclude Include="Task2\WeakPtr.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

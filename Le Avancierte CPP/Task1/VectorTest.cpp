@@ -11,6 +11,7 @@
 #if (defined(LEVEL)  && (LEVEL>80) ||  !defined(LEVEL))   && (defined(VG_BETYG) || defined(G_BETYG))
 
 #include "Vector.hpp"
+#include "DebugPrinting.h"
 
 //Generates all functions declared
 //Uncomment this to check that all functions compiles.
@@ -86,11 +87,6 @@ void TestPushBack() {
 
 void TestRolOp();
 void TestCapacity();
-void Print(std::string message);
-
-void Print(std::string message) {
-    cout << message << "\n";
-}
 
 void TestVector() {
     {//Vector<char>(char *)
@@ -101,7 +97,7 @@ void TestVector() {
         CheckVec(Foo); CheckVec(FooC);
         CheckVec(Bar); CheckVec(BarC);
     }
-    Print("tested vector<char>");
+    Println("tested vector<char>");
     {//check empty vectors;
         Vector<char> v1;
         assert(v1.capacity() == 0);
@@ -109,14 +105,14 @@ void TestVector() {
         Vector<char> v2(v1);
         assert(v2 == "");
     }
-    Print("tested empty vectors");
+    Println("tested empty vectors");
 
     {//Move constructor
         Vector<char> a("foo");
         Vector<char> b(std::move(a));
         assert(b == "foo" && a.data() == nullptr);
     }
-    Print("tested move constructor");
+    Println("tested move constructor");
 
     {//Vector<char>(Copy constructor)
         Vector<char> v1("foo"); assert(v1 == "foo");
@@ -138,7 +134,7 @@ void TestVector() {
         assert(v3[0] == 'h');
         v3[1] = 'y'; assert(v2[1] == 'e');
     }
-    Print("tested copy constructor");
+    Println("tested copy constructor");
 
     {//Kedjat assignment
         Vector<char> v1("foo"), v2("bar"), v3("hej");
@@ -147,7 +143,7 @@ void TestVector() {
         assert(v3 == v2);
         assert(v1 == v2);
     }
-    Print("tested chained assignments");
+    Println("tested chained assignments");
 
 #ifdef VG_BETYG
     {//No extra realloc
@@ -156,7 +152,7 @@ void TestVector() {
         v1 = v2;
         assert(xxx == v1.data());
     }
-    Print("tested no extra reallocation");
+    Println("tested no extra reallocation");
 
 #endif
 
@@ -178,7 +174,7 @@ void TestVector() {
         Bar.push_back('x');
         assert(Bar.capacity() > 0);
     }
-    Print("tested move assignment");
+    Println("tested move assignment");
 
 
     {//-	operator[](size_t i) som indexerar utan range check.
@@ -197,7 +193,7 @@ void TestVector() {
         assert(IsConstOrConstRefFun(vecBarC[1]));
         assert(vecBarC[1] == 'a');
     }
-    Print("tested operator[] ");
+    Println("tested operator[] ");
 
     {//-	at(size_t i) som indexerar med range check
         Vector<char> vecBar("Bar");
@@ -233,7 +229,7 @@ void TestVector() {
         assert(vecBarC.at(1) == 'a');
         assert(IsConstOrConstRefFun(vecBarC.at(1)));
     }
-    Print("tested indexing with at()");
+    Println("tested indexing with at()");
 
 
     // data
@@ -245,7 +241,7 @@ void TestVector() {
         assert(!IsConstOrConstRefFun(*vecBar.data()));
         assert(IsConstOrConstRefFun(*vecBarC.data()));
     }
-    Print("tested data");
+    Println("tested data");
 
 
     //-	push_back(char c) lägger till ett tecken sist.
@@ -256,7 +252,7 @@ void TestVector() {
         vecBar.push_back('a');
         assert(vecBar == "Bara");
     }
-    Print("tested push_back");
+    Println("tested push_back");
 
 
     // resize
@@ -273,14 +269,14 @@ void TestVector() {
         vecBar.resize(5);
         assert(buf == vecBar.data() && vecBar.capacity() >= 6 && vecBar.size() == 5);
     }
-    Print("tested resize");
+    Println("tested resize");
 
     {//minitest push_back &&
         Vector<char> vecBar("Bar");
         vecBar.push_back('a');
         assert(vecBar == "Bara");
     }
-    Print("tested push_back again");
+    Println("tested push_back again");
 
 
     //-	operator== 
@@ -297,16 +293,16 @@ void TestVector() {
         swap(Foo, Bar);
         assert(fptr == Bar.data() && bptr == Foo.data());
     }
-    Print("tested swap");
+    Println("tested swap");
 
     TestRolOp();
-    Print("tested RolOp ??");
+    Println("tested RolOp ??");
 
     TestCapacity();
-    Print("tested capacity");
+    Println("tested capacity");
 
     TestPushBack();
-    Print("tested push back again... again");
+    Println("tested push back again... again");
 
 
     cout << "TestVector klar\n\n";

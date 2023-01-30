@@ -11,6 +11,7 @@
 #if (defined(LEVEL)  && (LEVEL>80) ||  !defined(LEVEL))   && (defined(VG_BETYG) || defined(G_BETYG))
 
 #include "Vector.hpp"
+#include "DebugPrinting.h"
 
 #include <iostream>
 using std::cout;
@@ -375,41 +376,36 @@ void TestIter() {
     //-	*it, ++it, it++, (it+i), it[i], == och !=
     //also test most begin and end versions
     TestIterPart_();
-    cout << "Tested normal iterators \n";
+    Println("Tested normal iterators");
     TestIterPartC_();
-    cout << "Tested constant iterators\n";
+    Println("Tested constant iterators");
     TestIterPartR_();
-    cout << "Tested reverse iterators\n";
+    Println("Tested reverse iterators");
     TestIterPartCR_();
-    cout << "Tested constant reverse iterators\n";
-
+    Println("Tested constant reverse iterators");
     //Constructorer och assignment
     TestConstrAssignm();
-    cout << "Tested constructors anssignment iterators\n";
-
+    Println("Tested constructors anssignment iterators");
 
     //Test * ->
     TestAccess();
-    cout << "Tested access iterators\n";
-
+    Println("Tested access iterators");
 
     //Test ==, !=, <, ...
     TestRelOp();
-    cout << "Tested relational operators iterators\n";
-
+    Println("Tested relational operators iterators");
 
     //typdefs för iterator, const_iterator,  reverse_iterator och const_revers_iterator
     //   tested with static_assert below
 
     //Prova att sortera
     TestIterInAlg();
-    cout << "Tested iterators in algorithms\n";
+    Println("Tested iterators in algorithms");
 
     TestRevIterInAlg();
-    cout << "Tested reverse iterators in algorithms\n";
-
-    cout << "\nTest för (Väl-)Godkänt Iterator klar\n";
-
+    Println("Tested reverse iterators in algorithms");
+    Println("");
+    Println("Test för (Väl-)Godkänt Iterator klar");
 }
 
 #pragma region Test of typedefs!

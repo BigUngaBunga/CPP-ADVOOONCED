@@ -25,6 +25,21 @@
     <ClCompile Include="Task1\Test1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Task2\Test2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task2\TestBasicPointer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task2\TestSharedG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task2\TestShWeakVG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugPrinting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Vector.hpp">
@@ -39,8 +54,12 @@
     <ClInclude Include="Task1\VectIterTest.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Task1\Task1.h" />
     <ClInclude Include="Task1\Iterator.hpp" />
-    <ClInclude Include="Task2\Task2.h" />
+    <ClInclude Include="Task2\TestLevel.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="Task2\SharedPtr.hpp" />
+    <ClInclude Include="Task2\WeakPtr.hpp" />
+    <ClInclude Include="Task2\PointerCounter.hpp" />
+    <ClInclude Include="DebugPrinting.h" />
   </ItemGroup>
 </Project>

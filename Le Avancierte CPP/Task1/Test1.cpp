@@ -7,7 +7,7 @@
 #endif  // _DEBUG
 #include <crtdbg.h>
 
-#include "Task1.h"
+#include "Task.h"
 #include "TestLevel.h"
 #include "Vector.hpp"
 #include "VectIterTest.h"
@@ -20,9 +20,8 @@ using std::cout;
 
 void TestBasic();
 void TestVector();
-void FinishedTest(int i);
 
-void Task1::RunTask1() {
+void Task::RunTask1() {
 #ifdef DBG_NEW
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif

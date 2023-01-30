@@ -1,8 +1,7 @@
 // Le Avancierte CPP.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "Task1/Task1.h"
-#include "Task2/Task2.h"
+#include "Task.h"
 #include <iostream>
 #include <string>
 using std::cout;
@@ -57,18 +56,12 @@ void PickProgram()
 void RunProgram(int i) 
 {
     cout << "Starting task " << i << ".\n";
+    Task task;
     switch (i)
     {
-        case 1: 
-            Task1 task1;
-            task1.RunTask1();
-        break;
-        case 2:
-            Task2 task2;
-            task2.RunTask2();
-        break;
-    default:
-        cout << "Could not find the task";
+        case 1: task.RunTask1(); break;
+        case 2: task.RunTask2(); break;
+        default: cout << "Could not find the task";
         break;
     }
 }

@@ -22,6 +22,9 @@
 using std::cout;
 
 #include "Vector.hpp"
+#include "DebugPrinting.h"
+
+void FinishedTest(int testNumber);
 
 struct Cbasic { int i; };
 
@@ -30,10 +33,6 @@ struct Cbasic { int i; };
 #define FOX0 Vector<char> Fox;
 #define BAR Vector<char> Bar("Bar");
 #define BAR0 Vector<char> Bar;
-
-void FinishedTest(int i) {
-    cout << "Finished test " << i << ".\n";
-}
 
 void TestBasic() {
 #if LEVEL>=1
