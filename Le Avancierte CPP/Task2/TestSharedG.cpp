@@ -9,6 +9,7 @@ using std::cout;
 using std::cin;
 
 #include "SharedPtr.hpp"
+#include "WeakPtr.hpp"
 #include "DebugPrinting.h"
 
 struct C {

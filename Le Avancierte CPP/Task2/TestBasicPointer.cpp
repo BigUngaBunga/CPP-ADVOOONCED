@@ -1,5 +1,6 @@
 #include "TestLevel.h"
 #include "SharedPtr.hpp"
+#include "WeakPtr.hpp"
 #include "DebugPrinting.h"
 #include <iostream>
 using std::cout;
@@ -133,6 +134,8 @@ void TestBasicPointer() {
 #endif
 #if LEVEL>=7
     {
+        //auto p1 = MakeShared<TestChar>();
+
         auto p1 = MakeShared<TestChar>();
         auto p2 = MakeShared<TestChar>('b');
         assert(p1->_c == 'x' && p2->_c == 'b');
@@ -144,7 +147,7 @@ void TestBasicPointer() {
         TestWeak w0;
         assert(w0.expired());
         assert(w0.Invariant());
-        FinishedTest(8);
+        FinishedTest(11);
     }
 #endif
 #if LEVEL>=12
@@ -158,7 +161,7 @@ void TestBasicPointer() {
         TestWeak w0;
         TestShared s3 = w0.lock();
         assert(w0.expired());
-        FinishedTest(9);
+        FinishedTest(12);
     }
 #endif
 #if LEVEL>=13
@@ -167,7 +170,7 @@ void TestBasicPointer() {
         TestWeak w1(s1);
         TestWeak w2(w1);
         assert(s1 == w2.lock());
-        FinishedTest(10);
+        FinishedTest(13);
     }
 #endif
 #if LEVEL>=14
@@ -180,42 +183,7 @@ void TestBasicPointer() {
         swap(w1, w2);
         assert(w2.expired());
         assert(s1 == w1.lock());
-        FinishedTest(11);
+        FinishedTest(14);
     }
 #endif
-#if LEVEL>=1
-    {
-
-    }
-#endif
-#if LEVEL>=1
-    {
-
-    }
-#endif
-#if LEVEL>=1
-    {
-
-    }
-#endif
-#if LEVEL>=1
-    {
-
-    }
-#endif
-#if LEVEL>=0
-#endif
-#if LEVEL>=0
-#endif
-#if LEVEL>=0
-#endif
-#if LEVEL>=0
-#endif
-#if LEVEL>=0
-#endif
-#if LEVEL>=0
-#endif
-#if LEVEL>=0
-#endif
-
 }

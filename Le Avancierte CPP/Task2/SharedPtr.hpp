@@ -1,9 +1,13 @@
 #pragma once
 #define CHECK assert(Invariant());
 
+#include <memory>
 #include <cassert>
 #include <utility>
 #include "PointerCounter.hpp"
+
+template<class T>
+class WeakPtr;
 
 template <class T>
 class SharedPtr {
@@ -13,24 +17,30 @@ private:
 
 public:
 	#pragma region constructors
-	constexpr SharedPtr() noexcept : pointer(nullptr), counter(nullptr) {	}
+	constexpr SharedPtr() noexcept : pointer(nullptr), counter(nullptr) { CHECK; }
 	
+	constexpr SharedPtr(std::nullptr_t) noexcept : SharedPtr() {}
 
 	explicit SharedPtr(T* pointer) : pointer(pointer) {
 		counter = new PointerCounter();
 		counter->addHardReference();
-		bool boolius = Invariant();
 		CHECK;
 	}
 
-	constexpr SharedPtr(std::nullptr_t) noexcept : SharedPtr() {}
 	
-	explicit SharedPtr(SharedPtr<T>& sharedPtr) noexcept : pointer(sharedPtr.pointer), counter(sharedPtr.counter)  {
+	explicit SharedPtr(const WeakPtr<T>& weakPtr) : pointer(weakPtr.get()), counter(weakPtr.getCounter()) {
+		if (counter != nullptr && counter->CanDestroy())
+			throw std::bad_weak_ptr();
 		tryAddReference();
 		CHECK;
 	}
 
-	explicit SharedPtr(SharedPtr<T>&& sharedPtr) noexcept : pointer(std::move(sharedPtr.pointer)), counter(std::move(sharedPtr.counter)) {
+	SharedPtr(const SharedPtr<T>& sharedPtr) noexcept : pointer(sharedPtr.pointer), counter(sharedPtr.counter)  {
+		tryAddReference();
+		CHECK;
+	}
+
+	SharedPtr(SharedPtr<T>&& sharedPtr) noexcept : pointer(std::move(sharedPtr.pointer)), counter(std::move(sharedPtr.counter)) {
 		sharedPtr.counter = nullptr;
 		sharedPtr.pointer = nullptr;
 		CHECK;
@@ -38,14 +48,7 @@ public:
 
 	~SharedPtr() noexcept {
 		CHECK;
-
-		//TODO Är det inte fult att kika på counter?
-		if (counter != nullptr)
-		{
-			counter->removeHardReference();
-			if (counter->CanDestroy()) { delete pointer; }
-			if (counter->Empty()) { delete counter; }
-		}
+		tryRemoveReference();
 	}
 	#pragma endregion
 
@@ -54,9 +57,13 @@ public:
 		CHECK;
 		return pointer; 
 	}
+	PointerCounter* getCounter() const noexcept {
+		CHECK;
+		return counter;
+	}
+
 	size_t use_count() const noexcept {
 		CHECK;
-		//TODO se över detta, borde vara onödig tertiärsats
 		return counter == nullptr ? 0 : counter->hardCount();
 	}
 
@@ -90,6 +97,12 @@ public:
 	T* operator->() const noexcept { return pointer; }
 	operator bool() const noexcept{ return pointer != nullptr; }
 
+	friend void swap(SharedPtr& lhs, SharedPtr& rhs) noexcept {
+		auto temporary(std::move(lhs));
+		lhs = std::move(rhs);
+		rhs = std::move(temporary);
+	}
+
 	friend bool operator== (const SharedPtr& lhs, const SharedPtr& rhs) noexcept {
 		return lhs <=> rhs == 0;
 	}
@@ -112,14 +125,11 @@ public:
 	#pragma region HelperFunctions
 	void reset() noexcept {
 		CHECK;
-		if (counter != nullptr) {
-			counter->removeHardReference();
-			if (counter->CanDestroy()) { delete pointer; }
-			if (counter->Empty()) { delete counter; }
-		}//TODO kolla på onödig tilldelning av nullptr
+		tryRemoveReference();
 		pointer = nullptr;
 		counter = nullptr;
 	}
+
 private:
 	void tryAddReference() const noexcept { tryAddReference(counter); }
 	void tryAddReference(PointerCounter* counter) const noexcept {
@@ -138,3 +148,14 @@ private:
 	}
 	#pragma endregion
 };
+
+template <class T>
+auto MakeShared(T&& value) {
+	auto pointer = new T(std::move(value));
+	return SharedPtr<T>(pointer);
+}
+
+template <class T>
+SharedPtr<T> MakeShared() noexcept {
+	return SharedPtr<T>(new T());
+}

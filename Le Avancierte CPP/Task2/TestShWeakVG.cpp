@@ -22,7 +22,7 @@ void TestVGWeak() {
     //	o	inget	G	VG
     //	o	En SharedPtr	G	VG
     //	o	En WeakPtr	VG	VG
-    Println("Testing weak pointers")
+    Println("Testing weak pointers");
 
     WeakPtr<C> wp11;
     assert(wp11.expired());
@@ -125,7 +125,7 @@ void TestVGWeak() {
 }
 
 void TestVG() {
-    Println("Inte riktigt säker på vad skillnaden mellan TestVG och TestVGWeak är men här kommer TestVG")
+    Println("Inte riktigt säker på vad skillnaden mellan TestVG och TestVGWeak är men här kommer TestVG");
 
     //Weak pointer skall ha det som det står VG på nedan
     //-	Konstruktor som tar:		
@@ -163,7 +163,6 @@ void TestVG() {
     sp33.reset();
     assert(!sp33);
     assert(wp14.expired());
-    FinishedTest("destructors");
     //Shared(weak)
     try {
         SharedPtr<C> slask(wp14);
@@ -172,7 +171,7 @@ void TestVG() {
     catch (const std::bad_weak_ptr&) {
         ;
     }
-    FinishedTest("shared");
+    FinishedTest("destructors");
     //-	funktioner:		
     //	o	lock()		VG
     auto sp51 = wp11.lock();
