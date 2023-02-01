@@ -6,8 +6,8 @@ private:
 public:
 	PointerCounter() noexcept;
 	
-	void AddHardReference() noexcept;
-	void RemoveHardReference() noexcept;
+	void addHardReference() noexcept;
+	void removeHardReference() noexcept;
 	void AddWeakReference() noexcept;
 	void RemoveWeakReference() noexcept;
 
@@ -18,10 +18,12 @@ public:
 	bool Empty() const noexcept;
 };
 
-PointerCounter::PointerCounter() noexcept : hardReferences(0), weakReferences(0) {};
+PointerCounter::PointerCounter() noexcept : hardReferences(0), weakReferences(0) {
 
-void PointerCounter::AddHardReference() noexcept { ++hardReferences; }
-void PointerCounter::RemoveHardReference() noexcept {--hardReferences; }
+};
+
+void PointerCounter::addHardReference() noexcept { ++hardReferences; }
+void PointerCounter::removeHardReference() noexcept {--hardReferences; }
 void PointerCounter::AddWeakReference() noexcept { ++weakReferences; }
 void PointerCounter::RemoveWeakReference() noexcept {--weakReferences; }
 

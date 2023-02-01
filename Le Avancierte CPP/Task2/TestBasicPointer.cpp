@@ -102,9 +102,9 @@ void TestBasicPointer() {
         p1 = std::move(p3);
         assert(!p3);
         assert(p1->_c == 'c');
-        //p1 = std::move(p1);
-        //assert(p1);
-        //assert(p1->_c == 'c');
+        p1 = std::move(p1);
+        assert(p1);
+        assert(p1->_c == 'c');
         p1.reset();
         assert(p1.use_count() == 0 && !p1);
         FinishedTest(4);
@@ -114,6 +114,7 @@ void TestBasicPointer() {
     {
         TestShared p1(new TestChar('a'));
         TestShared p2(new TestChar('b'));
+        TestShared p3(new TestChar('A'));
         assert(p1 == p1);
         assert(p1 < p2 || p2 < p1);
         FinishedTest(5);
