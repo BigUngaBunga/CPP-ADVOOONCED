@@ -29,7 +29,7 @@ public:
 
 	
 	explicit SharedPtr(const WeakPtr<T>& weakPtr) : pointer(weakPtr.get()), counter(weakPtr.getCounter()) {
-		if (counter != nullptr && counter->CanDestroy())
+		if (const_cast<WeakPtr<T>&>(weakPtr).expired())
 			throw std::bad_weak_ptr();
 		tryAddReference();
 		CHECK;
@@ -150,12 +150,11 @@ private:
 };
 
 template <class T>
-auto MakeShared(T&& value) {
-	auto pointer = new T(std::move(value));
-	return SharedPtr<T>(pointer);
+SharedPtr<T> MakeShared(T&& value) {
+	return SharedPtr<T>(new T(std::move(value)));
 }
 
 template <class T>
-SharedPtr<T> MakeShared() noexcept {
+SharedPtr<T> MakeShared() {
 	return SharedPtr<T>(new T());
 }

@@ -4,7 +4,6 @@
 #include <iostream>
 using std::cout;
 
-
 void TestBasicPointer();
 void TestG();
 void TestVGWeak();

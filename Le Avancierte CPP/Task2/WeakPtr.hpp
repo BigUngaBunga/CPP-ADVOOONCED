@@ -36,15 +36,22 @@ public:
 
 #pragma endregion
 
-	SharedPtr<T> lock() const noexcept {
-		CHECK;
-		return SharedPtr<T>(*this);
+
+	bool expired() noexcept {
+		bool isExpired = counter == nullptr || counter->hardCount() <= 0;
+		if (isExpired) {
+			tryRemoveReference();
+			counter = nullptr;
+		}
+		return isExpired;
 	}
 
-	bool expired() noexcept {//TODO ta bort referens till räknare om det inte finns något i pekaren
-		if (counter != nullptr)
-			return counter->hardCount() <= 0;
-		return true;
+	SharedPtr<T> lock() noexcept {
+		CHECK;
+		if (expired()) {
+			return SharedPtr<T>();
+		}
+		return SharedPtr<T>(*this);
 	}
 
 	T* get() const noexcept {
