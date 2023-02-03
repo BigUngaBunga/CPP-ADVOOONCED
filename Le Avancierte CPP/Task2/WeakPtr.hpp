@@ -136,9 +136,7 @@ private:
 public:
 #pragma region Debug
 	bool Invariant() const noexcept {
-		if (pointer == nullptr)
-			return true;
-		return counter != nullptr && counter->weakCount() > 0;
+		return counter == nullptr || (pointer != nullptr && counter->weakCount() > 0);
 	}
 #pragma endregion
 };
