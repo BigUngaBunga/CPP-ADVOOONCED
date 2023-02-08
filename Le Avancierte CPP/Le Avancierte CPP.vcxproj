@@ -142,6 +142,7 @@
     <ClCompile Include="Task2\TestBasicPointer.cpp" />
     <ClCompile Include="Task2\TestSharedG.cpp" />
     <ClCompile Include="Task2\TestShWeakVG.cpp" />
+    <ClCompile Include="Task3\Test3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Dhelper.h" />
@@ -155,6 +156,10 @@
     <ClInclude Include="Task2\SharedPtr.hpp" />
     <ClInclude Include="Task2\TestLevel.h" />
     <ClInclude Include="Task2\WeakPtr.hpp" />
+    <ClInclude Include="Task3\Ackermann.hpp" />
+    <ClInclude Include="Task3\Add.hpp" />
+    <ClInclude Include="Task3\ConstItProblem.hpp" />
+    <ClInclude Include="Task3\Simplify.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

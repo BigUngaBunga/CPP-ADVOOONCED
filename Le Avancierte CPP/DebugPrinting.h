@@ -3,3 +3,4 @@
 void FinishedTest(int testNumber);
 void FinishedTest(std::string message);
 void Println(std::string message);
+void Println();

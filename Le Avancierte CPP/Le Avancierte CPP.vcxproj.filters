@@ -40,6 +40,9 @@
     <ClCompile Include="DebugPrinting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Task3\Test3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Vector.hpp">
@@ -61,5 +64,9 @@
     <ClInclude Include="Task2\WeakPtr.hpp" />
     <ClInclude Include="Task2\PointerCounter.hpp" />
     <ClInclude Include="DebugPrinting.h" />
+    <ClInclude Include="Task3\ConstItProblem.hpp" />
+    <ClInclude Include="Task3\Add.hpp" />
+    <ClInclude Include="Task3\Ackermann.hpp" />
+    <ClInclude Include="Task3\Simplify.hpp" />
   </ItemGroup>
 </Project>
