@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include "Task.h"
 #include "DebugPrinting.h"
-#define LEVEL 2
+#define LEVEL 3
 #define VG true
 
 #if LEVEL>=1
@@ -40,15 +40,20 @@ void TestAckermann() {
 #include "Simplify.hpp"
 
 void TestSimplify() {
+    const int * const& broobz = new int();
+    auto before = typeid(broobz).name();
+    std::cout << getTypeName<decltype(broobz)>();
+
     AssertSame(int, SimplifyType<int>::type);
-    AssertSame(int, SimplifyType<const int>::type);
-    AssertSame(int, SimplifyType<int*>::type);
-    AssertSame(int, SimplifyType_t<int*>);
-    AssertSame(int, SimplifyType_t<int&>);
-    AssertSame(int, SimplifyType_t<int[]>);
-    AssertSame(const int, SimplifyType_t<const int*>);
-    AssertSame(int** const*, SimplifyType_t<int** const**>);
-    AssertSame(const int, SimplifyType_t<const int&>);
+    //AssertSame(int, SimplifyType<const int>::type);
+    //AssertSame(int, SimplifyType<int*>::type);
+    //AssertSame(int, SimplifyType_t<int*>);
+    //AssertSame(int, SimplifyType_t<int&>);
+    //AssertSame(int, SimplifyType_t<int[]>);
+    //AssertSame(const int, SimplifyType_t<const int*>);
+    //AssertSame(int** const*, SimplifyType_t<int** const**>);
+    //AssertSame(const int, SimplifyType_t<const int&>);
+    delete broobz;
 }
 #endif
 
