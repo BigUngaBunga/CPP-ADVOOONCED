@@ -16,6 +16,7 @@ void RunProgram(int i);
 
 int main()
 {
+    std::locale::global(std::locale("swedish"));
     PickProgram();
 }
 
