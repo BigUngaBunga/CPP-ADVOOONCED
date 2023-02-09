@@ -159,6 +159,7 @@
     <ClInclude Include="Task3\Ackermann.hpp" />
     <ClInclude Include="Task3\Add.hpp" />
     <ClInclude Include="Task3\ConstItProblem.hpp" />
+    <ClInclude Include="Task3\RemoveAllConst.hpp" />
     <ClInclude Include="Task3\Simplify.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

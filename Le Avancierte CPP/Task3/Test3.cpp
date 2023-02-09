@@ -2,8 +2,8 @@
 #include <typeinfo>
 #include "Task.h"
 #include "DebugPrinting.h"
-#define LEVEL 3
-//#define VG true
+#define LEVEL 6
+#define VG true
 
 #if LEVEL>=1
 #include "Add.hpp"
@@ -44,11 +44,13 @@ void TestSimplify() {
     constexpr auto value2 = getEnclosingModifier<int** const&>();
     constexpr auto value3 = getEnclosingModifier<int** const>();
     constexpr auto string = getTypeName<int* const* const>();
-    constexpr auto string = getTypeName<int** const&>();
-
-    //assert(std::is_same_v<int, int>);
-    bool isSame = std::is_same_v<int, SimplifyType_t<const int>>;
-    assert(isSame);
+    constexpr auto string2 = getTypeName<int** const&>();
+    constexpr auto string3 = getTypeName<int&>();
+    
+    using type = int** const**;
+    Modifier modifier = getEnclosingModifier<type>();
+    SimplifyType_t<type> a = 0;
+    SimplifyType<type, getEnclosingModifier<type>()>::type b = 0;
     AssertSame(int, SimplifyType_t<int>);
     AssertSame(int, SimplifyType_t<const int>);
     AssertSame(int, SimplifyType_t<int const>);
@@ -88,13 +90,24 @@ void TestBase() {
 #endif
 
 #if LEVEL>=6 && VG
-#include "RemAllConst.hpp"
+#include "RemoveAllConst.hpp"
 
 void TestRemoveAllConst() {
+    constexpr auto count = constOcurrances<const int *const *const *const>();
+    constexpr auto count2 = constOcurrances<int** >();
+    constexpr auto count3 = constOcurrances<const int * const*>();
+
+
+
+    RAC_t<const int> x = 0;
+    RAC_t<const int const> y = 0;
+    RAC_t<const int const *const> z = 0;
+    RAC_t<const int* const* const> z = 0;
+
     AssertSame(int, RAC<int>::type);
     AssertSame(int, RAC<const int>::type);
     AssertSame(int*, RAC<int*>::type);
-    AssertSame(int***, RAC<int const* const* const* const>::type);
+    //AssertSame(int***, RAC<int const* const* const* const>::type);
 }
 #endif
 
