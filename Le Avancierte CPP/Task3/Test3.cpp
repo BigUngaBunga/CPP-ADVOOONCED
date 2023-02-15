@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include "Task.h"
 #include "DebugPrinting.h"
-#define LEVEL 6
+#define LEVEL 7
 #define VG true
 
 #if LEVEL>=1
@@ -93,7 +93,10 @@ void TestBase() {
 #include "RemoveAllConst.hpp"
 
 void TestRemoveAllConst() {
-    constexpr auto nextChar = getNextNonConstModifier<const int *&, int*>();
+    constexpr auto nextChar = getNextModifier<const int const*&, int>();
+    constexpr auto negstChar = getNextModifier<const int const*&, int*>();
+    constexpr auto neckstChar = getNextModifier<const int const *&, int*&>();
+
 #pragma warning(disable:4091)
     RAC_t<const int>;
     RAC_t<int const>;
@@ -105,19 +108,24 @@ void TestRemoveAllConst() {
     RAC_t<const int* const []>;
 #pragma warning(default:4091)
 
-    AssertSame(int, RAC<int>::type);
-    AssertSame(int, RAC<const int>::type);
-    AssertSame(int*, RAC<int*>::type);
-    AssertSame(int***, RAC<int const* const* const* const>::type);
+    AssertSame(int, RAC_t<int>);
+    AssertSame(int, RAC_t<const int>);
+    AssertSame(int*, RAC_t<int*>);
+    AssertSame(int***, RAC_t<int const* const* const* const>);
 }
 #endif
 
 #if LEVEL>=7
 #include "Sum.hpp"
+#include <vector>
 void TestSum() {
     std::vector<int> v = { 1,2,3,-9 };
     int sum = Sum(v);
     assert(sum == -3);
+
+    std::vector<float> v2 = { 1.3f,2.5f,3.2f,-6.0f };
+    auto sum2 = Sum(v2);
+    assert(sum2 == 1.0f);
 }
 #endif
 

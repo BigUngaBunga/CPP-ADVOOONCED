@@ -13,8 +13,8 @@ constexpr Modifier getNextModifier() {
 
 template<class T, class U>
 constexpr char getNextNonConstModifier() {
-	std::basic_string_view<char> tName = getTypeName<T>();
-	std::basic_string_view<char> uName = getTypeName<U>();
+	constexpr std::basic_string_view<char> tName = getTypeName<T>();
+	constexpr std::basic_string_view<char> uName = getTypeName<U>();
 	
 	size_t uCounter = 0;
 	for (size_t i = 0; i < tName.size(); i++)
@@ -26,7 +26,7 @@ constexpr char getNextNonConstModifier() {
 			return tFront;
 	}
 
-	return '+';;
+	return '+';
 }
 
 template<class T, class U = BaseType_t<T>, Modifier nextModifier = getNextModifier<T, U>()>

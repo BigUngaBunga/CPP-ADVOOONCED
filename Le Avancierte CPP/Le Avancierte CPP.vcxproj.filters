@@ -69,5 +69,7 @@
     <ClInclude Include="Task3\Ackermann.hpp" />
     <ClInclude Include="Task3\Simplify.hpp" />
     <ClInclude Include="Task3\RemoveAllConst.hpp" />
+    <ClInclude Include="Task3\Sum.hpp" />
+    <ClInclude Include="Task3\SFINAE.hpp" />
   </ItemGroup>
 </Project>

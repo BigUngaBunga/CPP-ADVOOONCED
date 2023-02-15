@@ -160,7 +160,9 @@
     <ClInclude Include="Task3\Add.hpp" />
     <ClInclude Include="Task3\ConstItProblem.hpp" />
     <ClInclude Include="Task3\RemoveAllConst.hpp" />
+    <ClInclude Include="Task3\SFINAE.hpp" />
     <ClInclude Include="Task3\Simplify.hpp" />
+    <ClInclude Include="Task3\Sum.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
