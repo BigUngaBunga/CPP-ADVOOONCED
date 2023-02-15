@@ -1,65 +1,53 @@
 #pragma once
-template <class T>
-constexpr int constOcurrances()
-{
-	using namespace std;
-	basic_string_view p = getTypeName<T>();
-	size_t start = 0;
-	int ocurrances = 0;
-	while (true)
-	{
-		start = p.find("const", start);
-		if (start < 0 || start > p.size())
-			break;
-		++ocurrances;
-		++start;
-	}
-	return ocurrances;
+template<class T, class U>
+constexpr Modifier getNextModifier() {
+	constexpr char modifier = getNextNonConstModifier<T, U>();
+	if (modifier == '&')
+		return Reference;
+	else if (modifier == '*')
+		return Pointer;
+	else if (modifier =='[')
+		return Array;
+	return None;
 }
 
-//template<class T, int numberOfConst = constOcurrances<T>()>
-//struct RAC {
-//	using type = RAC<std::remove_const_t<T>, numberOfConst - 1>::type;
-//};
-//
-//template<class T>
-//concept IsPointer = requires (T t) {
-//	std::is_pointer_v<T>;
-//};
-//
-//template<class T>
-//using RAC_t = typename RAC<T>::type;
-//
-//
-//template<class T> requires IsPointer<T>
-//struct RAC<T*> {
-//	using type = RAC<std::remove_const_t<T>, constOcurrances<T>()>::type;
-//};
-//
-//template<class T>
-//struct RAC<T, 0> {
-//	using type = T;
-//};
+template<class T, class U>
+constexpr char getNextNonConstModifier() {
+	std::basic_string_view<char> tName = getTypeName<T>();
+	std::basic_string_view<char> uName = getTypeName<U>();
+	
+	size_t uCounter = 0;
+	for (size_t i = 0; i < tName.size(); i++)
+	{
+		char tFront = tName.at(i);
+		if (uCounter < uName.size() && tFront == uName.at(uCounter))
+			++uCounter;
+		else if (uCounter >= uName.size() && (tFront == '&' || tFront == '*' || tFront == '['))
+			return tFront;
+	}
 
-template<class T, bool isConst = (constOcurrances<T>() > 0)>
+	return '+';;
+}
+
+template<class T, class U = BaseType_t<T>, Modifier nextModifier = getNextModifier<T, U>()>
 struct RAC {
-	using type = RAC<std::remove_const_t<T>>::type;
+	using type = U;
 };
 
 template<class T>
 using RAC_t = typename RAC<T>::type;
 
-template<class T>
-concept IsPointer = requires (T t) {
-	std::is_pointer_v<T>;
+template<class T, class U>
+struct RAC<T, U, Reference> {
+	using type = RAC<T, std::add_lvalue_reference_t<U>>::type;
 };
 
-template<class T> requires IsPointer<T>
-struct RAC<T*, true> {
-	using type = RAC<std::add_pointer_t<std::remove_const_t<std::remove_pointer_t<T>>>>::type;
+template<class T, class U>
+struct RAC<T, U, Pointer> {
+	using type = RAC<T, std::add_pointer_t<U>>::type;
 };
 
-template<class T> requires IsPointer<T>
-struct RAC<T, false> {
-	using type = T;
+template<class T, class U>
+struct RAC<T, U, Array> {
+	using type = RAC<T, U[]>::type;
 };

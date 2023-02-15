@@ -44,8 +44,8 @@ void TestSimplify() {
     constexpr auto value2 = getEnclosingModifier<int** const&>();
     constexpr auto value3 = getEnclosingModifier<int** const>();
     constexpr auto string = getTypeName<int* const* const>();
-    constexpr auto string2 = getTypeName<int** const&>();
-    constexpr auto string3 = getTypeName<int&>();
+    constexpr auto string2 = getTypeName<std::string** const&>();
+    constexpr auto string3 = getTypeName<float&>();
     
     using type = int** const**;
     Modifier modifier = getEnclosingModifier<type>();
@@ -93,21 +93,22 @@ void TestBase() {
 #include "RemoveAllConst.hpp"
 
 void TestRemoveAllConst() {
-    constexpr auto count = constOcurrances<const int *const *const *const>();
-    constexpr auto count2 = constOcurrances<int** >();
-    constexpr auto count3 = constOcurrances<const int * const*>();
-
-
-
-    RAC_t<const int> x = 0;
-    RAC_t<const int const> y = 0;
-    RAC_t<const int const *const> z = 0;
-    RAC_t<const int* const* const> z = 0;
+    constexpr auto nextChar = getNextNonConstModifier<const int *&, int*>();
+#pragma warning(disable:4091)
+    RAC_t<const int>;
+    RAC_t<int const>;
+    RAC_t<const int *const>;
+    RAC_t<double const & >;
+    RAC_t<const int*& >;
+    RAC_t<const float* const* const>;
+    RAC_t<const char** const** >;
+    RAC_t<const int* const []>;
+#pragma warning(default:4091)
 
     AssertSame(int, RAC<int>::type);
     AssertSame(int, RAC<const int>::type);
     AssertSame(int*, RAC<int*>::type);
-    //AssertSame(int***, RAC<int const* const* const* const>::type);
+    AssertSame(int***, RAC<int const* const* const* const>::type);
 }
 #endif
 
