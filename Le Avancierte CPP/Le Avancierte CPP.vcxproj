@@ -158,6 +158,7 @@
     <ClInclude Include="Task2\WeakPtr.hpp" />
     <ClInclude Include="Task3\Ackermann.hpp" />
     <ClInclude Include="Task3\Add.hpp" />
+    <ClInclude Include="Task3\Citt.hpp" />
     <ClInclude Include="Task3\ConstItProblem.hpp" />
     <ClInclude Include="Task3\RemoveAllConst.hpp" />
     <ClInclude Include="Task3\SFINAE.hpp" />

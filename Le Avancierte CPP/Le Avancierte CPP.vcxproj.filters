@@ -71,5 +71,6 @@
     <ClInclude Include="Task3\RemoveAllConst.hpp" />
     <ClInclude Include="Task3\Sum.hpp" />
     <ClInclude Include="Task3\SFINAE.hpp" />
+    <ClInclude Include="Task3\Citt.hpp" />
   </ItemGroup>
 </Project>

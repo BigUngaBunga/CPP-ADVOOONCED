@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include "Task.h"
 #include "DebugPrinting.h"
-#define LEVEL 7
+#define LEVEL 9
 #define VG true
 
 #if LEVEL>=1
@@ -93,19 +93,19 @@ void TestBase() {
 #include "RemoveAllConst.hpp"
 
 void TestRemoveAllConst() {
-    constexpr auto nextChar = getNextModifier<const int const*&, int>();
-    constexpr auto negstChar = getNextModifier<const int const*&, int*>();
-    constexpr auto neckstChar = getNextModifier<const int const *&, int*&>();
+    constexpr auto nextChar = getNextModifier<int const*&, int>();
+    constexpr auto negstChar = getNextModifier<int const*&, int*>();
+    constexpr auto neckstChar = getNextModifier<int const *&, int*&>();
 
 #pragma warning(disable:4091)
     RAC_t<const int>;
     RAC_t<int const>;
     RAC_t<const int *const>;
-    RAC_t<double const & >;
+    RAC_t<double const &>;
     RAC_t<const int*& >;
     RAC_t<const float* const* const>;
     RAC_t<const char** const** >;
-    RAC_t<const int* const []>;
+    RAC_t<const int* const [] >;
 #pragma warning(default:4091)
 
     AssertSame(int, RAC_t<int>);
@@ -136,15 +136,17 @@ using std::string;
 #include "SFINAE.hpp"
 void TestSFINAE() {
     int i(3);
+    constexpr bool noThrow = std::is_nothrow_copy_constructible_v<int>;
     assert(NoThrowCopyConstructible(i));
     auto str = string("hej");
+    constexpr bool noThrow2 = std::is_nothrow_copy_constructible_v<string>;
     assert(!NoThrowCopyConstructible(str));
 }
 #endif
 
 #if LEVEL>=9 && VG
 #include "Citt.hpp"
-void TestIter() {
+void TestIterator() {
     using iter = Iter<char, char>;
     using const_iter = Iter<char, const char>;
 
@@ -195,10 +197,10 @@ void Task::RunTask3() {
     FinishedTest("SFINAE");
 #endif
 #if LEVEL>=9 && VG
-    TestIter();
+    TestIterator();
     FinishedTest("Iterators");
     Println("Finished all tasks");
 #endif
-    Println("Borde finnas en minnesläcka");
+    Println("There should only be one 4 byte memory leak");
     new int;
 }

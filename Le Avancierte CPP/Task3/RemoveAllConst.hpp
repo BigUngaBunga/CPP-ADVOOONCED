@@ -11,11 +11,31 @@ constexpr Modifier getNextModifier() {
 	return None;
 }
 
+//template<class T, class U>
+//constexpr char getNextNonConstModifier(std::basic_string_view<char> tName = getTypeName<T>(),
+//	std::basic_string_view<char> uName = getTypeName<U>()) {
+//
+//	if (!uName.empty() && tName.front() == uName.front())
+//	{
+//		//tName.remove_prefix(tName.find_first_of(uName.back(), 0));
+//
+//		tName.remove_prefix(1);
+//		uName.remove_prefix(1);
+//		return getNextNonConstModifier<T, U>(tName, uName);
+//	}
+//	else if (uName.empty() && (tName.front() == '&' || tName.front() == '*' || tName.front() == '['))
+//		return tName.front();
+//	else if (!tName.empty()) {
+//		tName.remove_prefix(1);
+//		return getNextNonConstModifier<T, U>(tName, uName);
+//	}
+//	return '+';
+//}
+
 template<class T, class U>
 constexpr char getNextNonConstModifier() {
 	constexpr std::basic_string_view<char> tName = getTypeName<T>();
 	constexpr std::basic_string_view<char> uName = getTypeName<U>();
-	
 	size_t uCounter = 0;
 	for (size_t i = 0; i < tName.size(); i++)
 	{
