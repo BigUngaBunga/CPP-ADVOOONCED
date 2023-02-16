@@ -1,7 +1,10 @@
 #pragma once
+#include <algorithm>
+
+#pragma region Helper Functions
 template<class T, class U>
 constexpr Modifier getNextModifier() {
-	constexpr char modifier = getNextNonConstModifier<T, U>();
+	char modifier = getNonConstInName<T, U>();
 	if (modifier == '&')
 		return Reference;
 	else if (modifier == '*')
@@ -11,43 +14,56 @@ constexpr Modifier getNextModifier() {
 	return None;
 }
 
-//template<class T, class U>
-//constexpr char getNextNonConstModifier(std::basic_string_view<char> tName = getTypeName<T>(),
-//	std::basic_string_view<char> uName = getTypeName<U>()) {
-//
-//	if (!uName.empty() && tName.front() == uName.front())
-//	{
-//		//tName.remove_prefix(tName.find_first_of(uName.back(), 0));
-//
-//		tName.remove_prefix(1);
-//		uName.remove_prefix(1);
-//		return getNextNonConstModifier<T, U>(tName, uName);
-//	}
-//	else if (uName.empty() && (tName.front() == '&' || tName.front() == '*' || tName.front() == '['))
-//		return tName.front();
-//	else if (!tName.empty()) {
-//		tName.remove_prefix(1);
-//		return getNextNonConstModifier<T, U>(tName, uName);
-//	}
-//	return '+';
-//}
+constexpr size_t getFirstModifierPosition(std::basic_string_view<char> typeName) {
+	size_t position = std::min<size_t>(typeName.find_first_of('*'), typeName.find_first_of('&'));
+	return std::min<size_t>(typeName.find_first_of('['), position);
+}
 
 template<class T, class U>
-constexpr char getNextNonConstModifier() {
-	constexpr std::basic_string_view<char> tName = getTypeName<T>();
-	constexpr std::basic_string_view<char> uName = getTypeName<U>();
-	size_t uCounter = 0;
-	for (size_t i = 0; i < tName.size(); i++)
-	{
-		char tFront = tName.at(i);
-		if (uCounter < uName.size() && tFront == uName.at(uCounter))
-			++uCounter;
-		else if (uCounter >= uName.size() && (tFront == '&' || tFront == '*' || tFront == '['))
-			return tFront;
-	}
+constexpr char getNonConstInName(std::basic_string_view<char> tName = getTypeName<T>(),
+	std::basic_string_view<char> uName = getTypeName<U>()) {
 
+	if (!uName.empty())
+	{	
+		uName.remove_prefix(std::min<size_t>(uName.size(), getFirstModifierPosition(uName)));
+		if (!uName.empty())
+		{
+			tName.remove_prefix(tName.find_first_of(uName.front()) + 1);
+			uName.remove_prefix(1);
+		}
+		return getNonConstInName<T, U>(tName, uName);
+	}
+	else if (!tName.empty()) {
+		if ((tName.front() == '&' || tName.front() == '*' || tName.front() == '['))
+			return tName.front();
+		tName.remove_prefix(1);
+		return getNonConstInName<T, U>(tName, uName);
+	}
 	return '+';
 }
+#pragma endregion
+
+
+#pragma region Previous solution
+//template<class T, class U>
+//constexpr char getNextNonConstModifier() {
+//	constexpr std::basic_string_view<char> tName = getTypeName<T>();
+//	constexpr std::basic_string_view<char> uName = getTypeName<U>();
+//	size_t uCounter = 0;
+//	for (size_t i = 0; i < tName.size(); i++)
+//	{
+//		char tFront = tName.at(i);
+//		if (uCounter < uName.size() && tFront == uName.at(uCounter))
+//			++uCounter;
+//		else if (uCounter >= uName.size() && (tFront == '&' || tFront == '*' || tFront == '['))
+//			return tFront;
+//	}
+//
+//	return '+';
+//}
+#pragma endregion
+
+
 
 template<class T, class U = BaseType_t<T>, Modifier nextModifier = getNextModifier<T, U>()>
 struct RAC {

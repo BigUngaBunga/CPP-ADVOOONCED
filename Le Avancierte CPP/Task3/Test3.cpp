@@ -96,7 +96,6 @@ void TestRemoveAllConst() {
     constexpr auto nextChar = getNextModifier<int const*&, int>();
     constexpr auto negstChar = getNextModifier<int const*&, int*>();
     constexpr auto neckstChar = getNextModifier<int const *&, int*&>();
-
 #pragma warning(disable:4091)
     RAC_t<const int>;
     RAC_t<int const>;
