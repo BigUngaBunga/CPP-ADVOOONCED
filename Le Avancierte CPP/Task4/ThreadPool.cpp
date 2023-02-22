@@ -16,7 +16,7 @@ void ThreadPool::ExecuteTask() {
 		auto task = std::move(tasks.front());
 		tasks.pop();
 		taskLock.unlock();
-		
+		(*task)();
 	}
 	
 }

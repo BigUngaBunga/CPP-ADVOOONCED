@@ -11,19 +11,19 @@
 /*
  Source and destination PNG paths
  */
-#define SRCFILE ("Task4/Images/olle.png")
-#define DESTFILE ("Task4/Images/olleOutput.png")
+//#define SRCFILE ("Task4/Images/olle.png")
+//#define DESTFILE ("Task4/Images/olleOutput.png")
 
-//#define SRCFILE ("Task4/Images/tronlegacy.png")
-//#define DESTFILE ("Task4/Images/tronLegacyOutput.png")
+#define SRCFILE ("Task4/Images/tronlegacy.png")
+#define DESTFILE ("Task4/Images/tronLegacyOutput.png")
 
 /*
  Threading strategy
  -BRUTEFORCE: Call the filter function directly without using a thread pool
  -THREADPOOL: Use thread pool with one job per tile
  */
-//#define BRUTEFORCE
-#define THREADPOOL
+#define BRUTEFORCE
+//#define THREADPOOL
 
 /*
  Thread count
@@ -43,9 +43,9 @@
  -GRAYSCALE: Set each color component to G(RGB).
  -SOBEL (edge detection): Convolve an area around the pixel with a Sobel kernel.
  */
-#define FILTER_GRAYSCALE
+//#define FILTER_GRAYSCALE
 //#define FILTER_INVERT
-//#define FILTER_BLUR
+#define FILTER_BLUR
 //#define FILTER_SOBEL
 
 /*

@@ -315,12 +315,16 @@ void Task::RunTask4()
 #endif
     
 #ifdef THREADPOOL
-    
+#pragma region Debug
     auto voidFunction = [](int a, int b) { a + b; };
     auto intFunction = [](int a, int b) { return a + b; };
 
-    auto intResult = tp.enqueue(intFunction, 4, 6);
+    auto intFuture = tp.enqueue(intFunction, 4, 6);
+    intFuture.wait();
+    auto intResult = intFuture.get();
     tp.enqueue(voidFunction, 1, 3);
+#pragma endregion
+
 
     int nbrtiles = 0;
     for (uint i = 0; i < imgdim.width; i += TILESIZE)
@@ -332,7 +336,7 @@ void Task::RunTask4()
             uint tile_width = std::min<uint>(i + TILESIZE, imgdim.width) - i;
             uint tile_height = std::min<uint>(j + TILESIZE, imgdim.height) - j;
 
-            auto result = tp.enqueue(tile_filter_callable,
+            results.emplace_back(tp.enqueue(tile_filter_callable,
                 &buffer_src[0],
                 &buffer_dest[0],
                 imgdim,
@@ -340,9 +344,7 @@ void Task::RunTask4()
                 tile_y,
                 tile_width,
                 tile_height,
-                nbrtiles);
-
-            results.emplace_back(result);
+                nbrtiles));
         }
 #endif
     
