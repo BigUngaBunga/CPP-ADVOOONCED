@@ -22,8 +22,8 @@
  -BRUTEFORCE: Call the filter function directly without using a thread pool
  -THREADPOOL: Use thread pool with one job per tile
  */
-#define BRUTEFORCE
-//#define THREADPOOL
+//#define BRUTEFORCE
+#define THREADPOOL
 
 /*
  Thread count
@@ -34,7 +34,7 @@
 /*
  Tile size
  */
-#define TILESIZE 64
+#define TILESIZE 1024
 
 /*
  Filter type
@@ -45,8 +45,8 @@
  */
 //#define FILTER_GRAYSCALE
 //#define FILTER_INVERT
-#define FILTER_BLUR
-//#define FILTER_SOBEL
+//#define FILTER_BLUR
+#define FILTER_SOBEL
 
 /*
  Gauss kernel size (applies only to FILTER_BLUR)
@@ -59,6 +59,6 @@
  Sobel cut-off intensity, range 0-255 (applies only to FILTER_SOBEL).
  Higher accentuates edges more (discriminates smaller gradients).
  */
-#define SOBEL_THRESHOLD 70
+#define SOBEL_THRESHOLD 50
 
 #endif /* config_h */

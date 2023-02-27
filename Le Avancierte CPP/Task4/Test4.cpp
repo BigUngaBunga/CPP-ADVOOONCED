@@ -364,4 +364,6 @@ void Task::RunTask4()
     // Encode the filtered PNG
     savePNG(buffer_dest, imgdim, DESTFILE);
     std::cout << "Wrote " << DESTFILE << std::endl;
+
+    std::cout << "Jobs' done";
 }

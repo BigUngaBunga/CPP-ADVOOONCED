@@ -2,19 +2,21 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 
-#include <vector>               
+#include <vector>     
+#include <iostream>
 #include <queue>                
 #include <thread>               
-#include <functional>   //std::bind
-#include <future>       //std::future, std::packaged_tast
+#include <functional>
+#include <future>
 #include <mutex>
 #include <condition_variable>
 
 class ThreadPool {
 
+private:
     std::mutex taskMutex;
     std::condition_variable conditionVariable;
-    std::vector<std::thread> workers;
+    std::vector<std::jthread> workers;
     std::queue<std::shared_ptr<std::packaged_task<void()>>> tasks;
     bool endOfLife = false;
 public:
@@ -23,6 +25,8 @@ public:
     //used by main (you are free to change here and in main)
     explicit ThreadPool(size_t threads);
     
+    ~ThreadPool();
+
     template<class F>
     void AddTask(F&& task) {
         {
@@ -40,19 +44,15 @@ public:
         packageType task(std::bind_front(std::forward<F>(f), std::forward<Args>(args)...));
         std::future<Return> futureTask = task.get_future();
         if constexpr (std::is_void_v<Return>)
-        {
             AddTask(std::move(task));
-        }
         else
-            AddTask([&task]{std::invoke(task); });
+            AddTask([&task]{task();});
 
         futureTask.wait();
         return futureTask;
     }
 
-    /* todo: your implementation and more methods and variables*/
     void ExecuteTask();
-    
 };
 
 #endif
