@@ -143,6 +143,9 @@
     <ClCompile Include="Task2\TestSharedG.cpp" />
     <ClCompile Include="Task2\TestShWeakVG.cpp" />
     <ClCompile Include="Task3\Test3.cpp" />
+    <ClCompile Include="Task4\lodepng.cpp" />
+    <ClCompile Include="Task4\Test4.cpp" />
+    <ClCompile Include="Task4\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Dhelper.h" />
@@ -164,6 +167,13 @@
     <ClInclude Include="Task3\SFINAE.hpp" />
     <ClInclude Include="Task3\Simplify.hpp" />
     <ClInclude Include="Task3\Sum.hpp" />
+    <ClInclude Include="Task4\config.h" />
+    <ClInclude Include="Task4\lodepng.h" />
+    <ClInclude Include="Task4\threadpool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Task4\Images\olle.png" />
+    <Image Include="Task4\Images\tronlegacy.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

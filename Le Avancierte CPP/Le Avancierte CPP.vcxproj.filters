@@ -43,6 +43,15 @@
     <ClCompile Include="Task3\Test3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Task4\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task4\Test4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task4\ThreadPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Vector.hpp">
@@ -72,5 +81,12 @@
     <ClInclude Include="Task3\Sum.hpp" />
     <ClInclude Include="Task3\SFINAE.hpp" />
     <ClInclude Include="Task3\Citt.hpp" />
+    <ClInclude Include="Task4\config.h" />
+    <ClInclude Include="Task4\lodepng.h" />
+    <ClInclude Include="Task4\threadpool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Task4\Images\olle.png" />
+    <Image Include="Task4\Images\tronlegacy.png" />
   </ItemGroup>
 </Project>
