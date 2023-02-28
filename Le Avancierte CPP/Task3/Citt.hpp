@@ -11,6 +11,6 @@ public:
 	Iter() :_ptr(nullptr) {}
 	Iter(const Iter& other) : _ptr(other._ptr) {}
 	
-	template<class = typename std::enable_if_t<std::is_const_v<CT>>>
+	template<std::enable_if_t<std::is_const_v<CT>> = true>
 	Iter(const Iter<T, T>& other) : _ptr(other._ptr) {};
 };
