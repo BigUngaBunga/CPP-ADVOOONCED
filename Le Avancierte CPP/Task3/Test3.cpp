@@ -100,7 +100,7 @@ void TestRemoveAllConst() {
     RAC_t<const int>;
     RAC_t<int const>;
     RAC_t<const int *const>;
-    RAC_t<double const&>;
+    RAC_t<double const &>;
     RAC_t<const int*& >;
     RAC_t<const float* const* const>;
     RAC_t<const char** const** >;

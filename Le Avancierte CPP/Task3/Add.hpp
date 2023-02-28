@@ -6,6 +6,9 @@ struct Add {
 	static const int value = Add<X - 1, Y + 1>::value;
 };
 
+//template <int X, int Y>
+//using EnableIfXIsZero = 
+
 template <int Y>
 struct Add<0, Y> {
 	static const int value = Y;
