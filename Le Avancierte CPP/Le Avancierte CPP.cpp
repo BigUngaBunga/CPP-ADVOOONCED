@@ -8,7 +8,7 @@ using std::cout;
 using std::cin;
 using std::string;
 
-const int currentTasks = 4;
+const int currentTasks = 6;
 
 void ExplainPrograms();
 void PickProgram();
@@ -64,6 +64,8 @@ void RunProgram(int i)
         case 2: task.RunTask2(); break;
         case 3: task.RunTask3(); break;
         case 4: task.RunTask4(); break;
+        case 5: task.RunTask5(); break;
+        //case 6: task.RunTask6(); break;
         default: cout << "Could not find the task";
         break;
     }

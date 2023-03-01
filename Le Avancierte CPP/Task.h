@@ -5,4 +5,6 @@ public:
 	void RunTask2();
 	void RunTask3();
 	void RunTask4();
+	void RunTask5();
+	void RunTask6();
 };

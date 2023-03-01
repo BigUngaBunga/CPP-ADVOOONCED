@@ -52,6 +52,9 @@
     <ClCompile Include="Task4\ThreadPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Task5\Test5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Vector.hpp">
@@ -84,6 +87,7 @@
     <ClInclude Include="Task4\config.h" />
     <ClInclude Include="Task4\lodepng.h" />
     <ClInclude Include="Task4\threadpool.h" />
+    <ClInclude Include="Task5\DynamicAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Task4\Images\olle.png" />
