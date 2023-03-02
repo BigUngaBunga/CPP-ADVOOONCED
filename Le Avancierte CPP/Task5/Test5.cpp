@@ -21,6 +21,7 @@ void Task::RunTask5()
 {
     using IndexType = uint16_t;
     using Pool = DynamicAllocator<8, IndexType>;
+    using BigPool = DynamicAllocator<16, IndexType>;
 
 #ifdef DefaultTests
     // A few test types to create in the pool
@@ -46,11 +47,20 @@ void Task::RunTask5()
     const int capacity = 4;
     std::cout << "Creating pool with capacity " << capacity << "..." << std::endl;
     Pool pool{ capacity };
+    //BigPool bigPool{ capacity };
+
 
     pool.dump_pool();
 
     std::cout << "Creating 2 objects..." << std::endl;
-    auto pp = pool.create<double>(4511.2523453);
+    //auto hoogePP = pool.create<IndexType>(5);
+    //auto hoogePP = pool.add_at<IndexType>(2, 5);
+    auto PP = pool.add_at<double>(2, 4.2);
+    pool.dump_pool();
+    std::cout << "Double att 2 " << pool.at<double>(2) << std::endl;
+    void* poonter = new double(54.222113);
+    std::cout << "Converting from void* to double: " << *(double*)poonter << std::endl;
+
     auto p1 = pool.create<IAm2byte>((int16_t)1);
     auto p2 = pool.create<IAm4byte>((int32_t)2);
     pool.dump_pool();
