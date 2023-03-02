@@ -21,7 +21,7 @@ using std::cout;
 void TestBasic();
 void TestVector();
 
-void Task::RunTask1() {
+void Task::RunTask1() const {
 #ifdef DBG_NEW
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif

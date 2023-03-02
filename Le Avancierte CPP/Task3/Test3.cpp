@@ -165,7 +165,7 @@ void TestIterator() {
 
 #include <iostream>
 
-void Task::RunTask3() {
+void Task::RunTask3() const {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #if LEVEL>=1
     TestAdd();

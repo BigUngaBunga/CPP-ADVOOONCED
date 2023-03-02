@@ -9,7 +9,7 @@ void TestG();
 void TestVGWeak();
 void TestVG();
 
-void Task::RunTask2() {
+void Task::RunTask2() const {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
     TestBasicPointer();

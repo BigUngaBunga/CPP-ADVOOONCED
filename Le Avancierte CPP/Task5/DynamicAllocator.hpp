@@ -1,10 +1,20 @@
 #pragma once
-template<size_t elementSize, class IndexType>
+
+#include "ConstantMath.hpp"
+
+template<size_t elementSize>
+struct alignas(elementSize) Index {};
+
+template<size_t elementSize, class IndexType, 
+    size_t chunkSize = (size_t)Pow(2,
+    Ceil<double>(Sqrt<double>(elementSize, elementSize)))>
 class DynamicAllocator {
 
 private:
-    using memoryType = unsigned char;
-    memoryType* memory;
+
+    using chunkType = Index<chunkSize>;
+    chunkType* chunk;
+
     IndexType freeListHead = 0;
     IndexType terminationValue = -1;
 
@@ -19,21 +29,21 @@ private:
         {
             f();
             nextFree = at<IndexType>(nextFree);
-            //operator[](nextFree)
         }
     }
 
 public:
 
 
-    explicit DynamicAllocator(size_t capacity) : memory((memoryType*)malloc(elementSize * capacity)), capacity(capacity){
-        std::cout << "Total size of memoryType is: " << alignof(memoryType) << std::endl;
-        std::cout << "Total size of unsigned char is: " << alignof(unsigned char) << std::endl;
-        std::cout << "Size of memory is: " << sizeof(memory) << " element size is: " << elementSize << std::endl;
-        std::cout << "Total size of memory is: " << sizeof(memory) * capacity << std::endl;
+    explicit DynamicAllocator(size_t capacity) : capacity(capacity), 
+        chunk(new chunkType[capacity]){
+
+        std::cout << "Size of chunk is: " << alignof(chunkType);
+        std::cout << " element size is: " << elementSize << std::endl;
+        std::cout << "Total size of memory is: " << alignof(chunkType) * capacity << std::endl;
+        
         for (IndexType i = 0; i < capacity; i++)
             add_at<IndexType>(i, i == capacity - 1 ? terminationValue : i + 1);
-        freeListHead = 0;
     }
 
     ~DynamicAllocator() {
@@ -42,7 +52,6 @@ public:
 
     template<class T, class... Args>
     T* create(Args... args) {
-        //TODO lägg till föremål
         assert(sizeof(T) <= elementSize);
         assert(freeListHead != terminationValue);
         IndexType nextHead = at<IndexType>(freeListHead);
@@ -53,14 +62,23 @@ public:
 
     template<class T, class... Args>
     T* add_at(IndexType index, Args... args) {
-        auto voidptr = new (memory + index) T(std::forward<Args>(args)...);
-        return static_cast<T*>(voidptr);
+        return static_cast<T*>(new (chunk + index) T(std::forward<Args>(args)...));
     }
 
     template<class T>
     void destroy(T* object) {
-        //TODO ta bort om föremål finns i minnet
+        //TODO kolla så att föremål finns i minnet
+        IndexType index = (chunkType*)object - chunk;//TODO beräkna index
+        //IndexType index = 0;
+        object->~T();
+        add_at<IndexType>(index, freeListHead);
+        freeListHead = index;
     }
+
+    //void destroy_at(IndexType index) {
+    //    
+    //    
+    //}
 
     int count_free() const {
         int freeCounter = 0;
@@ -81,11 +99,6 @@ public:
 
     template<class Return>
     Return at(const IndexType index) const {
-        return static_cast<Return>(*(memory + index));
+        return *(Return*)(chunk + index);
     }
-
-    //template<>
-    //void* at<void>(IndexType index) {
-    //    return *(memory + index);
-    //}
 };

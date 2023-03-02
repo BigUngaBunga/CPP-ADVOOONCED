@@ -264,7 +264,7 @@ private:
     const float Gy[9] = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
 };
 
-void Task::RunTask4()
+void Task::RunTask4() const
 {
     std::cout << "Supported (hyper)threads on current CPU: " << std::thread::hardware_concurrency() << std::endl;
     

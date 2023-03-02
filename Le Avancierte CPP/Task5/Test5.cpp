@@ -10,14 +10,15 @@
 #include "Task.h"
 #include "DynamicAllocator.hpp"
 
+//#define CustomTests
+
 #define DefaultTests
 
-
-//#define Benchmark
+#define Benchmark
 #define TestDynamicAllocator
 #define TestNewDelete
 
-void Task::RunTask5()
+void Task::RunTask5() const
 {
     using IndexType = uint16_t;
     using Pool = DynamicAllocator<8, IndexType>;
@@ -43,23 +44,25 @@ void Task::RunTask5()
     // since max value is reserved as a null value
 //    Pool pool_ { (IndexType)-1 };
 
+    constexpr auto sqrt = Sqrt<double>(25, 4);
+    constexpr auto ceil = Ceil<double>(sqrt);
+    constexpr auto pow= Pow(2, ceil);
 
     const int capacity = 4;
     std::cout << "Creating pool with capacity " << capacity << "..." << std::endl;
     Pool pool{ capacity };
-    //BigPool bigPool{ capacity };
-
 
     pool.dump_pool();
 
-    std::cout << "Creating 2 objects..." << std::endl;
-    //auto hoogePP = pool.create<IndexType>(5);
-    //auto hoogePP = pool.add_at<IndexType>(2, 5);
-    auto PP = pool.add_at<double>(2, 4.2);
+#ifdef CustomTests
+    auto hoogePP = pool.create<IndexType>(5);
+    auto PP = pool.create<double>( 4.2);
     pool.dump_pool();
     std::cout << "Double att 2 " << pool.at<double>(2) << std::endl;
-    void* poonter = new double(54.222113);
-    std::cout << "Converting from void* to double: " << *(double*)poonter << std::endl;
+#endif // CustomTests
+
+
+    std::cout << "Creating 2 objects..." << std::endl;
 
     auto p1 = pool.create<IAm2byte>((int16_t)1);
     auto p2 = pool.create<IAm4byte>((int32_t)2);
@@ -76,6 +79,13 @@ void Task::RunTask5()
     assert(p1->x == 1);
     assert(p2->x == 2);
     assert(p3->x == 3);
+
+#ifdef CustomTests
+    std::cout << "Printing memory locations..." << std::endl;
+    std::cout << "p1:" << p1 << std::endl << "p2: " << p2 << std::endl;
+    std::cout << "p3: " << p3 << std::endl << "p4: " << p4 << std::endl;
+#endif // CustomTests
+
 
     std::cout << "Destroying 2 objects..." << std::endl;
     pool.destroy(p4);
