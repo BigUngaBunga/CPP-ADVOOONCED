@@ -33,12 +33,11 @@ void PickProgram()
     int taskNumber;
     while (cin >> userInput)
     {
-        taskNumber = -1;
         try
         {
              taskNumber = std::stoi(userInput);
         }
-        catch (const std::exception&)
+        catch (const std::bad_cast&)
         {
             cout << "Could not convert " << userInput << " to an integer.\n";
         }

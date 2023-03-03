@@ -10,7 +10,7 @@
 #include "Task.h"
 #include "DynamicAllocator.hpp"
 
-//#define CustomTests
+#define CustomTests
 
 #define DefaultTests
 
@@ -21,6 +21,7 @@
 void Task::RunTask5() const
 {
     using IndexType = uint16_t;
+    using SmollPool = DynamicAllocator<4, IndexType>;
     using Pool = DynamicAllocator<8, IndexType>;
     using BigPool = DynamicAllocator<16, IndexType>;
 
@@ -44,7 +45,7 @@ void Task::RunTask5() const
     // since max value is reserved as a null value
 //    Pool pool_ { (IndexType)-1 };
 
-    constexpr auto sqrt = Sqrt<double>(25, 4);
+    constexpr auto sqrt = Sqrt<double>(25, 6);
     constexpr auto ceil = Ceil<double>(sqrt);
     constexpr auto pow= Pow(2, ceil);
 
@@ -55,10 +56,32 @@ void Task::RunTask5() const
     pool.dump_pool();
 
 #ifdef CustomTests
-    auto hoogePP = pool.create<IndexType>(5);
-    auto PP = pool.create<double>( 4.2);
-    pool.dump_pool();
-    std::cout << "Double att 2 " << pool.at<double>(2) << std::endl;
+    SmollPool smallPool{ capacity };
+    auto ein = smallPool.create<int>(1);
+    auto zwei = smallPool.create<int>(2);
+    auto drei = (int*)3;
+    auto vier = smallPool.create<int>( 4);
+    auto fünf = smallPool.create<int>(5);
+    smallPool.destroy(zwei);
+    smallPool.dump_pool();
+    zwei = smallPool.create<int>(2);
+    smallPool.dump_pool();
+    smallPool.destroy(zwei);
+    smallPool.dump_pool();
+
+    if (false)
+    {
+        smallPool.create<double>(6.9); //Fails assert, type too big
+        smallPool.destroy(drei); //Fails assert, outside of pool memory
+    }
+
+    std::cout << std::endl << "Emptying pool... " << std::endl;
+    smallPool.destroy(fünf);
+    smallPool.destroy(ein);
+    smallPool.destroy(vier);
+    smallPool.dump_pool();
+    std::cout << std::endl;
+
 #endif // CustomTests
 
 
@@ -79,13 +102,6 @@ void Task::RunTask5() const
     assert(p1->x == 1);
     assert(p2->x == 2);
     assert(p3->x == 3);
-
-#ifdef CustomTests
-    std::cout << "Printing memory locations..." << std::endl;
-    std::cout << "p1:" << p1 << std::endl << "p2: " << p2 << std::endl;
-    std::cout << "p3: " << p3 << std::endl << "p4: " << p4 << std::endl;
-#endif // CustomTests
-
 
     std::cout << "Destroying 2 objects..." << std::endl;
     pool.destroy(p4);
