@@ -18,8 +18,17 @@
 #define TestDynamicAllocator
 #define TestNewDelete
 
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif
+
 void Task::RunTask5() const
 {
+#ifdef DBG_NEW
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+    
     using IndexType = uint16_t;
     using SmollPool = DynamicAllocator<4, IndexType>;
     using Pool = DynamicAllocator<8, IndexType>;
@@ -172,4 +181,7 @@ void Task::RunTask5() const
 #endif
 
 #endif
+
+    new int; 
+    std::cout << "det finns en avsiktlig minnesläcka!";
 }

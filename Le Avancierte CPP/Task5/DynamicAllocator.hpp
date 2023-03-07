@@ -21,16 +21,6 @@ private:
     size_t capacity;
     //DEBUG
 
-    template<class F>
-    void freelist_visitor(F&& f) const{
-        IndexType nextFree = freeListHead;
-        while (nextFree != terminationValue)
-        {
-            f(nextFree);
-            nextFree = at<IndexType>(nextFree);
-        }
-    }
-
     template<class T, class... Args>
     T* add_at(IndexType index, Args... args) {
         return static_cast<T*>(new (chunk + index) T(std::forward<Args>(args)...));
@@ -100,6 +90,16 @@ public:
     }
 
 #pragma region Visitor Functions
+    template<class F>
+    void freelist_visitor(F&& f) const {
+        IndexType nextFree = freeListHead;
+        while (nextFree != terminationValue)
+        {
+            f(nextFree);
+            nextFree = at<IndexType>(nextFree);
+        }
+    }
+    
     int count_free() const {
         int freeCounter = 0;
         freelist_visitor([&freeCounter]([[maybe_unused]] IndexType i){++freeCounter; });

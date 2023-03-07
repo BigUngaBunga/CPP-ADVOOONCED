@@ -55,6 +55,18 @@
     <ClCompile Include="Task5\Test5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Task6\Test6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task6\VectBasicTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task6\VectIterTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Task6\VectorTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Vector.hpp">
@@ -89,6 +101,11 @@
     <ClInclude Include="Task4\threadpool.h" />
     <ClInclude Include="Task5\DynamicAllocator.hpp" />
     <ClInclude Include="Task5\ConstantMath.hpp" />
+    <ClInclude Include="Task6\Dalloc.hpp" />
+    <ClInclude Include="Task6\Dhelper.h" />
+    <ClInclude Include="Task6\TestLevel.h" />
+    <ClInclude Include="Task6\Vector.hpp" />
+    <ClInclude Include="Task6\Iterator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Task4\Images\olle.png" />
