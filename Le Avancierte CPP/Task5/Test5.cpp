@@ -54,9 +54,11 @@ void Task::RunTask5() const
     // since max value is reserved as a null value
 //    Pool pool_ { (IndexType)-1 };
 
-    constexpr auto sqrt = Sqrt<double>(25, 6);
-    constexpr auto ceil = Ceil<double>(sqrt);
+    constexpr auto sqrt = Sqrt(55, 16);
+    constexpr auto ceil = Ceil(sqrt);
     constexpr auto pow= Pow(2, ceil);
+    //TODO byt ut sqrt till log2 för att ha ordentlig utveckling av storlek
+    //Annars kommer något med storlek 64 få storlek 256
 
     const int capacity = 4;
     std::cout << "Creating pool with capacity " << capacity << "..." << std::endl;

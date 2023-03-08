@@ -5,8 +5,7 @@ template<size_t elementSize>
 struct alignas(elementSize) Index {};
 
 template<size_t elementSize, class IndexType, 
-    size_t chunkSize = (size_t)Pow(2,
-    Ceil<double>(Sqrt<double>(elementSize, elementSize)))>
+    size_t chunkSize = Pow(2, Ceil(Sqrt(elementSize, elementSize)))>
 class DynamicAllocator {
 
 private:
@@ -16,10 +15,7 @@ private:
 
     IndexType freeListHead = 0;
     IndexType terminationValue = -1;
-
-    //DEBUG
     size_t capacity;
-    //DEBUG
 
     template<class T, class... Args>
     T* add_at(IndexType index, Args... args) {
@@ -30,7 +26,7 @@ private:
     template<class T>
     bool within_size_limit() const { return sizeof(T) <= elementSize; }
     template<class T>
-    bool is_in_memory(T* object) { return (int)capacity >= (chunkType*)object - chunk; }
+    bool is_in_memory(T* object) const { return (int)capacity >= (chunkType*)object - chunk; }
 #pragma endregion
 
 
