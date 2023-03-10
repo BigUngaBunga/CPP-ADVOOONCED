@@ -180,7 +180,7 @@ void TestAssignment() {
     }
 }
 
-void TestVector() {
+void TestVector2() {
     {//Vector<Dhelper>(char *)
         Vector<Dhelper> Foo("Foo");
         const Vector<Dhelper> FooC("Foo");
@@ -484,5 +484,5 @@ static_assert(is_same<Vector<int>::reverse_iterator, Vector<int>::reverse_iterat
 static_assert(is_same<Vector<int>::const_reverse_iterator, Vector<int>::const_reverse_iterator>::value, "typdef missing");
 
 #else
-void TestVector() {}
+void TestVector2() {}
 #endif

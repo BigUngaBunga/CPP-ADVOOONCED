@@ -27,7 +27,7 @@ struct Cbasic {
 #define BAR Vector<char> Bar("Bar");
 #define BAR0 Vector<char> Bar;
 
-void TestBasic() {
+void TestBasic2() {
 #if LEVEL>=1
 	{
 		Vector<char> v;

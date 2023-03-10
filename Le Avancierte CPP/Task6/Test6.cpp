@@ -18,9 +18,9 @@
 #include <cassert>
 using std::cout;
 
-void TestBasic();
-void TestVector();
-void TestIter();
+void TestBasic2();
+void TestVector2();
+void TestIter2();
 
 void Task::RunTask6() const {
 #if DEL == 1
@@ -51,12 +51,12 @@ void Task::RunTask6() const {
 #endif
         << ", Level is: " << LEVEL << "\n\n";
 
-    TestBasic();
-    TestVector();
-    TestIter();
+    TestBasic2();
+    TestVector2();
+    TestIter2();
 
 #if DEL == 1
-    new int; cout << "det finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
+    new int; cout << "\ndet finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
 #elif DEL == 2
     Dalloc<double>().allocate(4);
     //Dalloc<double>().allocate(2);

@@ -338,7 +338,7 @@ void TestRevIterInAlg() {
 #pragma endregion Test Iterator in Algorithm
 
 
-void TestIter() {
+void TestIter2() {
 
     //Iteratorerna ska kunna göra:
     //-	*it, ++it, it++, (it+i), it[i], == och !=
@@ -423,5 +423,5 @@ void TestTypeBeginEnd() {
 #pragma endregion Test Begin/End types
 
 #else
-void TestIter() {}
+void TestIter2() {}
 #endif

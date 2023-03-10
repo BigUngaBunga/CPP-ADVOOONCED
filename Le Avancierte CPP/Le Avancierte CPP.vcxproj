@@ -148,9 +148,9 @@
     <ClCompile Include="Task4\ThreadPool.cpp" />
     <ClCompile Include="Task5\Test5.cpp" />
     <ClCompile Include="Task6\Test6.cpp" />
-    <ClCompile Include="Task6\VectBasicTest.cpp" />
-    <ClCompile Include="Task6\VectIterTest.cpp" />
-    <ClCompile Include="Task6\VectorTest.cpp" />
+    <ClCompile Include="Task6\Vect2BasicTest.cpp" />
+    <ClCompile Include="Task6\Vect2IterTest.cpp" />
+    <ClCompile Include="Task6\Vector2Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task1\Dhelper.h" />

@@ -8,26 +8,15 @@
 #include "Iterator.hpp"
 using std::ostream;
 
-//TODO flytta ner IterartorTypes till vektorklassen
-#pragma region Iterator Types
-template <class T>
-using iterator = Iterator<T, 1>;
-template <class T>
-using const_iterator = Iterator<const T, 1>;
-template <class T>
-using reverse_iterator = Iterator<T, -1>;
-template <class T>
-using const_reverse_iterator = Iterator<const T, -1>;
-#pragma endregion
-
 template <class T>
 class Vector {
-	//TODO flytta in funktioner i Vektorklassen för att slippa template<class T>
 public:
-	using iterator = iterator<T>;
-	using const_iterator = const_iterator<T>;
-	using reverse_iterator = reverse_iterator<T>;
-	using const_reverse_iterator = const_reverse_iterator<T>;
+#pragma region Iterator Types
+	using iterator = Iterator<T, 1>;
+	using const_iterator = Iterator<const T, 1>;
+	using reverse_iterator = Iterator<T, -1>;
+	using const_reverse_iterator = Iterator<const T, -1>;
+#pragma endregion
 
 private:
 	T* container;
@@ -35,52 +24,142 @@ private:
 	size_t currentSize;
 
 public:
-	Vector() noexcept;
-	~Vector() noexcept;
-	Vector(const char* other);
-	Vector(const Vector& other);
-	Vector(Vector&& other) noexcept;
-	
-	Vector& operator=(const Vector& other);
-	Vector& operator=(Vector&& other) noexcept;
 
-	size_t size() const noexcept;
-	size_t capacity() const noexcept;
+#pragma region Constructors and destructors
 
-	void push_back(const T& value);
-	void pop_back();
+	Vector() noexcept : container(), currentCapacity(0), currentSize(0) { }
+
+	Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
+	{
+		container = new T[currentCapacity];
+		for (size_t i = 0; i < currentSize; ++i)
+			container[i] = other[i];
+		CHECK
+	}
+
+	~Vector() noexcept {
+		CHECK
+			delete[] container;
+	}
+
+	Vector(const Vector& other) : currentCapacity(other.capacity()){
+		delete[] container;
+		container = new T[currentCapacity];
+		for (size_t i = 0; i < other.size(); i++) {
+			container[i] = other[i];
+			currentSize++;
+		}
+		CHECK
+	}
+
+	Vector(Vector&& other) noexcept {
+		*this = std::move(other);
+		CHECK
+	}
+#pragma endregion
+
+
+#pragma region Assignment
+	Vector<T>& operator=(const Vector<T>& other) {
+		if (currentCapacity <= other.size()) {
+			setCapacity(other.capacity());
+		}
+
+		std::copy(other.begin(), other.end(), container);
+		currentSize = other.size();
+		CHECK
+			return *this;
+	}
+
+	Vector<T>& operator=(Vector<T>&& other) noexcept {
+		delete[] container;
+		container = std::move(other.container);
+		currentCapacity = std::move(other.currentCapacity);
+		currentSize = std::move(other.currentSize);
+		other.container = nullptr;
+		other.currentCapacity = 0;
+		other.currentSize = 0;
+		CHECK
+			return *this;
+	}
+#pragma endregion
+
 	void reserve(size_t newCapacity);
 	void setCapacity(size_t newCapacity);
 	void resize(size_t newSize);
 	void shrink_to_fit(){ setCapacity(currentSize); }
 
 
-	bool Empty() const;
-	bool Invariant() const;
+#pragma region Getters
+	size_t size() const noexcept { return currentSize; }
+	size_t capacity() const noexcept { return currentCapacity; }
+	bool Empty() const { return !(size() > 0); }
+#pragma endregion
 
-	T& operator[] (const size_t i);
-	const T& operator[] (size_t i) const;
-	T& at(size_t i);
-	const T& at(size_t i) const;
-	T* data() noexcept;
-	const T* data() const noexcept;
+#pragma region Debug
+	bool Invariant() const {
+		bool isValid = size() <= capacity();
+		if (capacity() != 0)
+			isValid = isValid && container != nullptr;
+		return isValid;
+	}
+#pragma endregion
 
-	#pragma region iterators
-	iterator begin();
-	iterator end();
-	const_iterator begin() const;
-	const_iterator end() const;
-	const_iterator cbegin() const;
-	const_iterator cend() const;
-	reverse_iterator rbegin();
-	reverse_iterator rend();
-	const_reverse_iterator rbegin() const;
-	const_reverse_iterator rend() const;
-	const_reverse_iterator crbegin() const;
-	const_reverse_iterator crend() const;
-	#pragma endregion
+#pragma region Access
+	T& operator[] (const size_t i) { return *(container + i); }
+	
+	const T& operator[] (size_t i) const { return *(container + i); }
+	
+	void push_back(const T& value) {
+		if (currentSize >= currentCapacity)
+			reserve(currentCapacity * 2 > InitialCapacity ? currentCapacity * 2 : InitialCapacity);
+		container[currentSize++] = value;
+		CHECK
+	}
+	
+	void pop_back() {
+		if (Empty())
+			return;
+		if (currentSize <= currentCapacity / 4)
+			setCapacity(currentCapacity / 2);
+		--currentSize;
+		CHECK
+	}
+	
+	T& at(size_t i) {
+		if (i >= currentSize)
+			throw std::out_of_range("boot to big");
+		return operator[](i);
+	}
+	const T& at(size_t i) const {
+		if (i >= currentSize)
+			throw std::out_of_range("boot too big");
+		return operator[](i);
+	}
+	
+	T* data() noexcept { return container; }
+	const T* data() const noexcept { return container; }
+#pragma endregion
 
-	#pragma region friends
+#pragma region iterators
+	iterator begin() { return { container }; }
+	iterator end() { return { container + currentSize }; }
+	
+	const_iterator begin() const { return { container }; }
+	const_iterator cbegin() const { return { container }; }
+	const_iterator end() const { return { container + currentSize }; }
+	const_iterator cend() const { return { container + currentSize }; }
+	
+	reverse_iterator rbegin() { return { container + currentSize - 1 }; }
+	reverse_iterator rend() { return {container - 1}; }
+	
+	const_reverse_iterator rbegin() const { return { container + currentSize - 1 }; }
+	const_reverse_iterator crbegin() const { return { container + currentSize - 1 }; }
+	const_reverse_iterator rend() const { return { container - 1 }; }
+	const_reverse_iterator crend() const { return { container - 1 }; }
+#pragma endregion
+
+#pragma region friends
 	friend bool operator== (const Vector& lhs, const Vector& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
@@ -114,49 +193,10 @@ public:
 		lhs = std::move(rhs);
 		rhs = std::move(temporaryVector);
 	}
-	#pragma endregion
+#pragma endregion
 };
 
-#pragma region Constructors and destructors
-
-template<class T>
-Vector<T>::Vector() noexcept : container(), currentCapacity(0), currentSize(0) { }
-
-template<class T>
-Vector<T>::Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
-{
-	container = new T[currentCapacity];
-	for (size_t i = 0; i < currentSize; ++i)
-		container[i] = other[i];
-	CHECK 
-}
-
-template<class T>
-Vector<T>::~Vector() noexcept {
-	CHECK
-	delete[] container;
-}
-
-template<class T>
-Vector<T>::Vector(const Vector& other) {
-	currentCapacity = other.capacity();
-	delete[] container;
-	container = new T[currentCapacity];
-	for (size_t i = 0; i < other.size(); i++) {
-		container[i] = other[i];
-		currentSize++;
-	}
-	CHECK
-}
-
-
-template<class T>
-Vector<T>::Vector(Vector&& other) noexcept {
-	*this = std::move(other);
-	CHECK
-}
-#pragma endregion
-
+//TODO flytta in funktioner i Vektorklassen för att slippa template<class T>
 #pragma region Size and capacity
 template<class T>
 void Vector<T>::reserve(size_t newCapacity) {
@@ -188,132 +228,5 @@ void Vector<T>::resize(size_t newSize) {
 	}
 	currentSize = newSize;
 	CHECK
-}
-#pragma endregion
-
-#pragma region Iterators
- template<class T>
- iterator<T> Vector<T>::begin() { return iterator(container); }
- template<class T>
- iterator<T> Vector<T>::end() { return iterator(container + currentSize); }
-
- template<class T>
- const_iterator<T> Vector<T>::begin() const { return const_iterator(container); }
- template<class T>
- const_iterator<T> Vector<T>::end() const { return const_iterator(container + currentSize); }
-
- template<class T>
- const_iterator<T> Vector<T>::cbegin() const { return const_iterator(container); }
- template<class T>
- const_iterator<T> Vector<T>::cend() const { return const_iterator(container + currentSize); }
- 
- template<class T>
- reverse_iterator<T> Vector<T>::rbegin() { return reverse_iterator(container + currentSize - 1); }
- template<class T>
- reverse_iterator<T> Vector<T>::rend() { return reverse_iterator(container - 1); }
- 
- template<class T>
- const_reverse_iterator<T> Vector<T>::rbegin() const { return const_reverse_iterator(container + currentSize - 1); }
- template<class T>
- const_reverse_iterator<T> Vector<T>::rend() const { return const_reverse_iterator(container - 1); }
-
- template<class T>
- const_reverse_iterator<T> Vector<T>::crbegin() const { return const_reverse_iterator(container + currentSize - 1); }
- template<class T>
- const_reverse_iterator<T> Vector<T>::crend() const { return const_reverse_iterator(container - 1); }
-
-#pragma endregion
-
-#pragma region Overloaded operators
- template<class T>
- Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
-	if (currentCapacity <= other.size()) {
-		setCapacity(other.capacity());
-	}
-
-	std::copy(other.begin(), other.end(), container);
-	currentSize = other.size();
-	CHECK
-		return *this;
-}
-
-template<class T>
-Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept {
-	delete[] container;
-	container = std::move(other.container);
-	currentCapacity = std::move(other.currentCapacity);
-	currentSize = std::move(other.currentSize);
-	other.container = nullptr;
-	other.currentCapacity = 0;
-	other.currentSize = 0;
-	CHECK
-	return *this;
-}
- 
-template<class T>
-T& Vector<T>::operator[] (size_t i) { return *(container + i); }
-
-template<class T>
-const T& Vector<T>::operator[] (size_t i) const { return *(container + i); }
-#pragma endregion
-
-#pragma region Getters
-template<class T>
-bool Vector<T>::Empty() const { return !(size() > 0); }
-
-template<class T>
-size_t Vector<T>::size() const noexcept { return currentSize; }
-
-template<class T>
-size_t Vector<T>::capacity() const noexcept { return currentCapacity; }
-
-template<class T>
-T* Vector<T>::data() noexcept { return container; }
-
-template<class T>
-const T* Vector<T>::data() const noexcept { return container; }
-#pragma endregion
-
-#pragma region Access
-template<class T>
-void Vector<T>::push_back(const T& value) {
-	if (currentSize >= currentCapacity)
-		reserve(currentCapacity * 2 > InitialCapacity ? currentCapacity * 2 : InitialCapacity);
-	container[currentSize++] = value;
-	CHECK
-}
-
-template<class T>
-void Vector<T>::pop_back() {
-	if (Empty())
-		return;
-	if (currentSize <= currentCapacity / 4)
-		setCapacity(currentCapacity / 2);
-	--currentSize;
-	CHECK
-}
-
-template<class T>
-T& Vector<T>::at(size_t i) {
-	if (i >= currentSize)
-		throw std::out_of_range("boot to big");
-	return operator[](i);
-}
-
-template<class T>
-const T& Vector<T>::at(size_t i) const {
-	if (i >= currentSize)
-		throw std::out_of_range("boot too big");
-	return operator[](i);
-}
-#pragma endregion
-
-#pragma region Debug
-template<class T>
-bool Vector<T>::Invariant() const {
-	bool isValid = size() <= capacity();
-	if (capacity() != 0)
-		isValid = isValid && container != nullptr;
-	return isValid;
 }
 #pragma endregion
