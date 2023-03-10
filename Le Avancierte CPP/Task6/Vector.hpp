@@ -1,5 +1,5 @@
 #pragma once
-#define CHECK assert(Invariant());
+#define CHECK assert(Invariant())
 #define InitialCapacity 10
 #include <cassert>
 #include <cstring>
@@ -11,53 +11,65 @@ using std::ostream;
 template <class T>
 class Vector {
 public:
+#pragma region Member Types
+	using value_type = T;
+	using const_value_type = const T;
+	using size_type = size_t;
+	using difference_type = std::ptrdiff_t;
+	using reference = T&;
+	using const_reference = const T&;
+	using pointer = T*;
+	using const_pointer = const T*;
+	using allocator = Dalloc<T>;
+#pragma endregion
+
+
 #pragma region Iterator Types
-	using iterator = Iterator<T, 1>;
-	using const_iterator = Iterator<const T, 1>;
-	using reverse_iterator = Iterator<T, -1>;
-	using const_reverse_iterator = Iterator<const T, -1>;
+	using iterator = Iterator<value_type, 1>;
+	using const_iterator = Iterator<const_value_type, 1>;
+	using reverse_iterator = Iterator<value_type, -1>;
+	using const_reverse_iterator = Iterator<const_value_type, -1>;
 #pragma endregion
 
 private:
-	T* container;
-	size_t currentCapacity;
-	size_t currentSize;
-
+	pointer container;
+	size_type currentCapacity;
+	size_type currentSize;
+	allocator _allocator;
 public:
 
 #pragma region Constructors and destructors
 
 	Vector() noexcept : container(), currentCapacity(0), currentSize(0) { }
 
-	Vector(const char* other) : currentCapacity(std::max((size_t)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
+	Vector(const char* other) : currentCapacity(std::max((size_type)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
 	{
+		
 		container = new T[currentCapacity];
-		for (size_t i = 0; i < currentSize; ++i)
+		for (size_type i = 0; i < currentSize; ++i)
 			container[i] = other[i];
-		CHECK
+		CHECK;
 	}
 
 	~Vector() noexcept {
-		CHECK
-			delete[] container;
+		CHECK;
+		delete[] container;
 	}
 
-	Vector(const Vector& other) : currentCapacity(other.capacity()){
-		delete[] container;
+	Vector(const Vector& other) : currentCapacity(other.size()){
 		container = new T[currentCapacity];
-		for (size_t i = 0; i < other.size(); i++) {
+		for (size_type i = 0; i < other.size(); i++) {
 			container[i] = other[i];
 			currentSize++;
 		}
-		CHECK
+		CHECK;
 	}
 
 	Vector(Vector&& other) noexcept {
 		*this = std::move(other);
-		CHECK
+		CHECK;
 	}
 #pragma endregion
-
 
 #pragma region Assignment
 	Vector<T>& operator=(const Vector<T>& other) {
@@ -67,8 +79,8 @@ public:
 
 		std::copy(other.begin(), other.end(), container);
 		currentSize = other.size();
-		CHECK
-			return *this;
+		CHECK;
+		return *this;
 	}
 
 	Vector<T>& operator=(Vector<T>&& other) noexcept {
@@ -79,16 +91,44 @@ public:
 		other.container = nullptr;
 		other.currentCapacity = 0;
 		other.currentSize = 0;
-		CHECK
-			return *this;
+		CHECK;
+		return *this;
 	}
 #pragma endregion
 
-	void reserve(size_t newCapacity);
-	void setCapacity(size_t newCapacity);
-	void resize(size_t newSize);
-	void shrink_to_fit(){ setCapacity(currentSize); }
+#pragma region Size and capacity
 
+	void reserve(size_t newCapacity) {
+		if (newCapacity > currentCapacity)
+			setCapacity(newCapacity);
+	}
+
+	void setCapacity(size_t newCapacity) {
+		currentCapacity = newCapacity;
+		T* temporaryData = container;
+		container = new T[currentCapacity];
+		currentSize = currentCapacity > currentSize ? currentSize : currentCapacity;
+		std::copy(temporaryData, (temporaryData + currentSize), container);
+		delete[] temporaryData;
+		CHECK;
+	}
+
+	void resize(size_t newSize) {
+		if (newSize >= currentCapacity)
+			setCapacity(newSize * 2 + 1);
+
+		if (currentSize < newSize)
+		{
+			for (auto iterator = (begin() + currentSize); iterator < (begin() + newSize); iterator++) {
+				*iterator = T();
+			}
+		}
+		currentSize = newSize;
+		CHECK;
+	}
+	
+	void shrink_to_fit(){ setCapacity(currentSize); }
+#pragma endregion
 
 #pragma region Getters
 	size_t size() const noexcept { return currentSize; }
@@ -114,7 +154,7 @@ public:
 		if (currentSize >= currentCapacity)
 			reserve(currentCapacity * 2 > InitialCapacity ? currentCapacity * 2 : InitialCapacity);
 		container[currentSize++] = value;
-		CHECK
+		CHECK;
 	}
 	
 	void pop_back() {
@@ -123,7 +163,7 @@ public:
 		if (currentSize <= currentCapacity / 4)
 			setCapacity(currentCapacity / 2);
 		--currentSize;
-		CHECK
+		CHECK;
 	}
 	
 	T& at(size_t i) {
@@ -195,38 +235,3 @@ public:
 	}
 #pragma endregion
 };
-
-//TODO flytta in funktioner i Vektorklassen för att slippa template<class T>
-#pragma region Size and capacity
-template<class T>
-void Vector<T>::reserve(size_t newCapacity) {
-	if (newCapacity > currentCapacity)
-		setCapacity(newCapacity);
-}
-
-template<class T>
-void Vector<T> ::setCapacity(size_t newCapacity) {
-	currentCapacity = newCapacity;
-	T* temporaryData = container;
-	container = new T[currentCapacity];
-	currentSize = currentCapacity > currentSize ? currentSize : currentCapacity;
-	std::copy(temporaryData, (temporaryData + currentSize), container);
-	delete[] temporaryData;
-	CHECK
-}
-
-template<class T>
-void Vector<T>::resize(size_t newSize) {
-	if (newSize >= currentCapacity)
-		setCapacity(newSize * 2 + 1);
-
-	if (currentSize < newSize)
-	{
-		for (auto iterator = (begin() + currentSize); iterator < (begin() + newSize); iterator++) {
-			*iterator = T();
-		}
-	}
-	currentSize = newSize;
-	CHECK
-}
-#pragma endregion

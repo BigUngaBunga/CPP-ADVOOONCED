@@ -12,6 +12,7 @@
 #include <cassert>
 #include <iostream>
 #include "Vector.hpp"
+#include "DebugPrinting.h"
 using std::cout;
 
 
@@ -34,16 +35,18 @@ void TestBasic2() {
 		assert(v.size() == 0);
 		assert(v.capacity() >= 0);
 		assert(v.Invariant());
+		FinishedTest(1);
 	}
 #endif
 #if LEVEL>=2
 	{
 		Vector<char> fox("fox");
 		assert(fox.size() == 3);
-		cout << fox;
+		cout << fox << std::endl;
 		assert(fox == fox);
 		Vector<char> bar("bar");
 		assert(!(fox == bar));
+		FinishedTest(2);
 	}
 #endif
 #if LEVEL>=3
@@ -55,6 +58,8 @@ void TestBasic2() {
 		assert(bar <= bar && fox >= fox);
 		Vector<char> foxa("foxa");
 		assert(fox<foxa&& foxa>fox);
+		FinishedTest(3);
+
 	}
 #endif
 #if LEVEL>=4
@@ -67,6 +72,7 @@ void TestBasic2() {
 		assert(fox2 == bar);
 		assert(fox2.size() == 3);
 		assert(fox2.capacity() >= 3);
+		FinishedTest(4);
 	}
 #endif
 #if LEVEL>=5
@@ -80,7 +86,7 @@ void TestBasic2() {
 
 		fox.at(1);
 		bar2.at(2);
-
+		FinishedTest(5);
 	}
 #endif
 #if LEVEL>=6
@@ -90,6 +96,7 @@ void TestBasic2() {
 		assert(fox == "foxx");
 		bar.push_back('y');
 		assert(bar == "y");
+		FinishedTest(6);
 	}
 #endif
 #if LEVEL>=7
@@ -102,6 +109,7 @@ void TestBasic2() {
 		assert(Fox2.Invariant() && Bar.Invariant());
 		assert(Bar == "Fox");
 		assert(Fox2 == "" || Fox2 == "Bar"); //Tillåt swap lösning
+		FinishedTest(7);
 	}
 #endif
 #if LEVEL>=8
@@ -121,6 +129,7 @@ void TestBasic2() {
 		Bar = "Bar";
 		swap(Fox, Bar);
 		assert(Fox == "Bar" && Bar == "Fox");
+		FinishedTest(8);
 	}
 #endif
 #if LEVEL>=9
@@ -128,6 +137,7 @@ void TestBasic2() {
 		FOX BAR;
 		Fox.data();
 		assert(&Fox[0] == Fox.data());
+		FinishedTest(9);
 	}
 #endif
 
@@ -157,6 +167,7 @@ void TestBasic2() {
 			cit = coo.rbegin(); cit = coo.rend();
 		}
 #endif DEL
+		FinishedTest(10);
 	}
 #endif
 #if LEVEL>=11
@@ -174,6 +185,7 @@ void TestBasic2() {
 		Vector<Cbasic> clist;
 		clist.push_back(Cbasic{ 1 });
 		assert(clist.begin()->i == 1);
+		FinishedTest(11);
 	}
 #endif
 #if LEVEL>=12
@@ -185,7 +197,7 @@ void TestBasic2() {
 		assert(*it1 == *it1--);
 		assert(*it1 == *fox.begin());
 		assert(*--it1 == *it1);
-
+		FinishedTest(12);
 	}
 #endif
 #if LEVEL>=13
@@ -199,7 +211,7 @@ void TestBasic2() {
 		it2 = it2 - 2;
 		assert(it2 == it);
 		assert((it3 - it) == 2);
-
+		FinishedTest(13);
 	}
 #endif
 #if DEL == 2
@@ -223,4 +235,5 @@ void TestBasic2() {
 #endif VG
 #endif LEVEL
 #endif DEL
+	FinishedTest(14);
 }
