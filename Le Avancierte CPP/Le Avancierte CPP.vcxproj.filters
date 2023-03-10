@@ -104,7 +104,7 @@
     <ClInclude Include="Task6\Dalloc.hpp" />
     <ClInclude Include="Task6\Dhelper.h" />
     <ClInclude Include="Task6\TestLevel.h" />
-    <ClInclude Include="Task6\Vector.hpp" />
+    <ClInclude Include="Task6\Vector2.hpp" />
     <ClInclude Include="Task6\Iterator.hpp" />
   </ItemGroup>
   <ItemGroup>

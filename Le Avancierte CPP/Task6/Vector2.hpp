@@ -1,6 +1,5 @@
 #pragma once
 #define CHECK assert(Invariant())
-#define InitialCapacity 10
 #include <cassert>
 #include <cstring>
 #include "String.h"
@@ -9,7 +8,7 @@
 using std::ostream;
 
 template <class T>
-class Vector {
+class Vector2 {
 public:
 #pragma region Member Types
 	using value_type = T;
@@ -21,6 +20,7 @@ public:
 	using pointer = T*;
 	using const_pointer = const T*;
 	using allocator = Dalloc<T>;
+	//using allocator = std::allocator<T>;
 #pragma endregion
 
 
@@ -32,32 +32,35 @@ public:
 #pragma endregion
 
 private:
-	pointer container;
+	static const size_type initialCapacity = 10;
 	size_type currentCapacity;
 	size_type currentSize;
+	pointer container;
 	allocator _allocator;
 public:
 
 #pragma region Constructors and destructors
 
-	Vector() noexcept : container(), currentCapacity(0), currentSize(0) { }
+	Vector2() noexcept : currentCapacity(0), currentSize(0), container() { }
 
-	Vector(const char* other) : currentCapacity(std::max((size_type)InitialCapacity, strlen(other) * 2)), currentSize(strlen(other))
+	Vector2(const char* other) :
+		currentCapacity(std::max(initialCapacity, strlen(other) * 2)),
+		currentSize(strlen(other)),
+		container(_allocator.allocate(currentCapacity))
 	{
-		
-		container = new T[currentCapacity];
 		for (size_type i = 0; i < currentSize; ++i)
-			container[i] = other[i];
+			operator[](i) = other[i];
 		CHECK;
 	}
 
-	~Vector() noexcept {
+	~Vector2() noexcept {
 		CHECK;
-		delete[] container;
+		_allocator.deallocate(container, currentCapacity);
 	}
 
-	Vector(const Vector& other) : currentCapacity(other.size()){
-		container = new T[currentCapacity];
+	Vector2(const Vector2& other) : currentCapacity(other.size()),
+		container(_allocator.allocate(currentCapacity))
+	{
 		for (size_type i = 0; i < other.size(); i++) {
 			container[i] = other[i];
 			currentSize++;
@@ -65,14 +68,14 @@ public:
 		CHECK;
 	}
 
-	Vector(Vector&& other) noexcept {
+	Vector2(Vector2&& other) noexcept {
 		*this = std::move(other);
 		CHECK;
 	}
 #pragma endregion
 
 #pragma region Assignment
-	Vector<T>& operator=(const Vector<T>& other) {
+	Vector2& operator=(const Vector2& other) {
 		if (currentCapacity <= other.size()) {
 			setCapacity(other.capacity());
 		}
@@ -83,8 +86,9 @@ public:
 		return *this;
 	}
 
-	Vector<T>& operator=(Vector<T>&& other) noexcept {
-		delete[] container;
+	Vector2& operator=(Vector2&& other) noexcept {
+		//delete[] container;
+		_allocator.deallocate(container, currentCapacity);
 		container = std::move(other.container);
 		currentCapacity = std::move(other.currentCapacity);
 		currentSize = std::move(other.currentSize);
@@ -104,12 +108,12 @@ public:
 	}
 
 	void setCapacity(size_t newCapacity) {
-		currentCapacity = newCapacity;
 		T* temporaryData = container;
-		container = new T[currentCapacity];
-		currentSize = currentCapacity > currentSize ? currentSize : currentCapacity;
+		container = _allocator.allocate(newCapacity);
+		currentSize = newCapacity > currentSize ? currentSize : newCapacity;
 		std::copy(temporaryData, (temporaryData + currentSize), container);
-		delete[] temporaryData;
+		_allocator.deallocate(temporaryData, currentCapacity);
+		currentCapacity = newCapacity;
 		CHECK;
 	}
 
@@ -128,6 +132,18 @@ public:
 	}
 	
 	void shrink_to_fit(){ setCapacity(currentSize); }
+
+	void ResizeIfTooSmall() {
+		if (currentSize >= currentCapacity) {
+			size_t doubledSize = currentCapacity * 2 + 1;
+			reserve(doubledSize > initialCapacity ? doubledSize : initialCapacity);
+		}
+	}
+
+	void ResizeIfTooBig() {
+		if (currentSize <= currentCapacity / 4)
+			setCapacity(currentCapacity / 2);
+	}
 #pragma endregion
 
 #pragma region Getters
@@ -151,8 +167,7 @@ public:
 	const T& operator[] (size_t i) const { return *(container + i); }
 	
 	void push_back(const T& value) {
-		if (currentSize >= currentCapacity)
-			reserve(currentCapacity * 2 > InitialCapacity ? currentCapacity * 2 : InitialCapacity);
+		ResizeIfTooSmall();
 		container[currentSize++] = value;
 		CHECK;
 	}
@@ -160,12 +175,17 @@ public:
 	void pop_back() {
 		if (Empty())
 			return;
-		if (currentSize <= currentCapacity / 4)
-			setCapacity(currentCapacity / 2);
+		ResizeIfTooBig();
 		--currentSize;
 		CHECK;
 	}
 	
+	template<class... Args>
+	reference emplace_back(Args&& ... args) {
+		ResizeIfTooSmall();
+		return *(new (container + currentSize++) T(std::forward<Args>(args)...));
+	}
+
 	T& at(size_t i) {
 		if (i >= currentSize)
 			throw std::out_of_range("boot to big");
@@ -200,7 +220,7 @@ public:
 #pragma endregion
 
 #pragma region friends
-	friend bool operator== (const Vector& lhs, const Vector& rhs) {
+	friend bool operator== (const Vector2& lhs, const Vector2& rhs) {
 		if (lhs.size() != rhs.size())
 			return false;
 		for (size_t i = 0; i < lhs.size(); i++)
@@ -210,7 +230,7 @@ public:
 		return true;
 	}
 
-	friend auto operator<=> (const Vector& lhs, const Vector& rhs) {
+	friend auto operator<=> (const Vector2& lhs, const Vector2& rhs) {
 		size_t smallestSize = std::min(lhs.size(), rhs.size());
 		for (size_t i = 0; i < smallestSize; i++) {
 			auto comparison = lhs.at(i) <=> rhs.at(i);
@@ -222,13 +242,13 @@ public:
 		return lhs.size() <=> rhs.size();
 	}
 
-	friend std::ostream& operator<<(std::ostream& cout, const Vector& other) {
+	friend std::ostream& operator<<(std::ostream& cout, const Vector2& other) {
 		for (size_t i = 0; i < other.size(); ++i)
 			cout << other[i];
 		return cout;
 	}
 
-	friend void swap(Vector<T>& lhs, Vector<T>& rhs) {
+	friend void swap(Vector2& lhs, Vector2& rhs) {
 		auto temporaryVector(std::move(lhs));
 		lhs = std::move(rhs);
 		rhs = std::move(temporaryVector);

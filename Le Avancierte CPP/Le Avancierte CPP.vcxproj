@@ -181,7 +181,7 @@
     <ClInclude Include="Task6\Dhelper.h" />
     <ClInclude Include="Task6\Iterator.hpp" />
     <ClInclude Include="Task6\TestLevel.h" />
-    <ClInclude Include="Task6\Vector.hpp" />
+    <ClInclude Include="Task6\Vector2.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Task4\Images\olle.png" />
