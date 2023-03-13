@@ -3,7 +3,7 @@
 
 #include "Dalloc.hpp"
 #define DEL 2 //del 1 eller 2 av Vectorlabben
-#define LEVEL 20
+#define LEVEL 99
 #define VG_BETYG
 //#define VG_BETYG
 

@@ -59,8 +59,7 @@ void Task::RunTask6() const {
     new int; cout << "\ndet finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
 #elif DEL == 2
     Dalloc<double>().allocate(4);
-    //Dalloc<double>().allocate(2);
-    //Dalloc<double>().allocate(1); cout << "det finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
+    cout << "det finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
 #else
     static_assert(false);
 #endif DEL

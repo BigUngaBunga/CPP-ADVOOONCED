@@ -43,30 +43,24 @@ public:
 
 	Vector2() noexcept : currentCapacity(0), currentSize(0), container() { }
 
-	Vector2(const char* other) :
-		currentCapacity(std::max(initialCapacity, strlen(other) * 2)),
-		currentSize(strlen(other)),
-		container(_allocator.allocate(currentCapacity))
-	{
-		for (size_type i = 0; i < currentSize; ++i)
-			operator[](i) = other[i];
-		CHECK;
-	}
-
 	~Vector2() noexcept {
 		CHECK;
 		_allocator.deallocate(container, currentCapacity);
 	}
 
-	Vector2(const Vector2& other) : currentCapacity(other.size()),
-		container(_allocator.allocate(currentCapacity))
+	template<class Titerator>
+	Vector2(const size_t capacity, const Titerator& begin, const Titerator& end) :
+		currentCapacity(capacity), currentSize(end - begin), 
+		container(_allocator.allocate(capacity))
 	{
-		for (size_type i = 0; i < other.size(); i++) {
-			container[i] = other[i];
-			currentSize++;
-		}
+		std::ranges::copy(begin, end, container);
 		CHECK;
 	}
+
+	explicit(false) Vector2(const char* other) : 
+		Vector2(strlen(other), other, other + strlen(other)){}
+
+	Vector2(const Vector2& other) : Vector2(other.size(), other.begin(), other.end()) {}
 
 	Vector2(Vector2&& other) noexcept {
 		*this = std::move(other);
@@ -75,19 +69,42 @@ public:
 #pragma endregion
 
 #pragma region Assignment
-	Vector2& operator=(const Vector2& other) {
-		if (currentCapacity <= other.size()) {
-			setCapacity(other.capacity());
-		}
+	Vector2& AssSimple(const Vector2& other) {
+		auto temporary = Vector2(other);
+		swap(temporary);
+		return *this;
+	}
 
-		std::copy(other.begin(), other.end(), container);
+	Vector2& AssFast(const Vector2& other) {
+		reserveDestructive(other.size());
+		std::ranges::copy(other.begin(), other.end(), container);
 		currentSize = other.size();
 		CHECK;
 		return *this;
 	}
 
+	Vector2& AssStrong(const Vector2& other) {
+		
+		Vector2 temporary;
+		try
+		{
+			temporary = Vector2(other);
+		}
+		catch (const std::bad_alloc& e)
+		{
+			throw e;
+		}
+		swap(temporary);
+		return *this;
+	}
+
+	Vector2& Ass(const Vector2& other) {
+		return (*this) = other;
+	}
+
+	Vector2& operator=(const Vector2& other) { return AssFast(other); }
+
 	Vector2& operator=(Vector2&& other) noexcept {
-		//delete[] container;
 		_allocator.deallocate(container, currentCapacity);
 		container = std::move(other.container);
 		currentCapacity = std::move(other.currentCapacity);
@@ -98,6 +115,8 @@ public:
 		CHECK;
 		return *this;
 	}
+
+
 #pragma endregion
 
 #pragma region Size and capacity
@@ -113,6 +132,19 @@ public:
 		currentSize = newCapacity > currentSize ? currentSize : newCapacity;
 		std::copy(temporaryData, (temporaryData + currentSize), container);
 		_allocator.deallocate(temporaryData, currentCapacity);
+		currentCapacity = newCapacity;
+		CHECK;
+	}
+
+	void reserveDestructive(size_t newCapacity) {
+		if (newCapacity > currentCapacity)
+			setCapacityDestructive(newCapacity);
+	}
+
+	void setCapacityDestructive(size_t newCapacity) {
+		_allocator.deallocate(container, currentCapacity);
+		container = _allocator.allocate(newCapacity);
+		currentSize = 0;
 		currentCapacity = newCapacity;
 		CHECK;
 	}
@@ -133,10 +165,11 @@ public:
 	
 	void shrink_to_fit(){ setCapacity(currentSize); }
 
+
 	void ResizeIfTooSmall() {
 		if (currentSize >= currentCapacity) {
 			size_t doubledSize = currentCapacity * 2 + 1;
-			reserve(doubledSize > initialCapacity ? doubledSize : initialCapacity);
+			setCapacity(doubledSize > initialCapacity ? doubledSize : initialCapacity);
 		}
 	}
 
@@ -172,6 +205,12 @@ public:
 		CHECK;
 	}
 	
+	void push_back(T&& value) {
+		ResizeIfTooSmall();
+		container[currentSize++] = std::move(value);
+		CHECK;
+	}
+
 	void pop_back() {
 		if (Empty())
 			return;
@@ -248,10 +287,23 @@ public:
 		return cout;
 	}
 
-	friend void swap(Vector2& lhs, Vector2& rhs) {
-		auto temporaryVector(std::move(lhs));
+	void swap(Vector2& other) noexcept {
+		auto temporaryData = data();
+		auto temporarySize = size();
+		auto temporaryCapacity = capacity();
+		container = other.data();
+		currentSize = other.size();
+		currentCapacity = other.capacity();
+		other.container = temporaryData;
+		other.currentSize = temporarySize;
+		other.currentCapacity = temporaryCapacity;
+	}
+
+	friend void swap(Vector2& lhs, Vector2& rhs) noexcept {
+		/*auto temporaryVector(std::move(lhs));
 		lhs = std::move(rhs);
-		rhs = std::move(temporaryVector);
+		rhs = std::move(temporaryVector);*/
+		lhs.swap(rhs);
 	}
 #pragma endregion
 };

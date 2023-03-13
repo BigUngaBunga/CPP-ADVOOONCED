@@ -5,7 +5,7 @@ template<size_t elementSize>
 struct alignas(elementSize) Index {};
 
 template<size_t elementSize, class IndexType, 
-    size_t chunkSize = Pow(2, Ceil(Sqrt(elementSize, elementSize)))>
+    size_t chunkSize = Pow(2, Ceil(Log2(elementSize)))>
 class DynamicAllocator {
 
 private:

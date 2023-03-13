@@ -1,22 +1,8 @@
 #pragma once
-//Based on https://github.com/lakshayg/compile_time
 
 template <class T>
-constexpr bool is_close(T x, T y) {
-	T abs = x - y;
-	if (abs < 0)
-		abs *= -1;
-	return abs <= 1e-7;
-}
-
-constexpr double Sqrt(double x, double guess) {
-	return is_close(guess * guess, x) ? guess
-		: Sqrt(x, (guess + x / guess) / static_cast<double>(2));
-}
-
-template <class T, size_t base>
-constexpr T log(T t) {
-	
+constexpr double Log2(T t) {
+	return t <= 2 ? t / 2.0 : 1 + Log2(t / 2.0);
 }
 
 template<class Float>

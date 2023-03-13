@@ -2,7 +2,7 @@
 
 #if (defined(LEVEL)  && (LEVEL>80) ||  !defined(LEVEL))   && (defined(VG_BETYG) || defined(G_BETYG))
 
-#include "Vector.hpp"
+#include "Vector2.hpp"
 
 #include <iostream>
 using std::cout;
@@ -12,10 +12,10 @@ using std::endl;
 
 #pragma region help jox
 
-using IT = Vector<char>::iterator;
-using CIT = Vector<char>::const_iterator;
-using RIT = Vector<char>::reverse_iterator;
-using CRIT = Vector<char>::const_reverse_iterator;
+using IT = Vector2<char>::iterator;
+using CIT = Vector2<char>::const_iterator;
+using RIT = Vector2<char>::reverse_iterator;
+using CRIT = Vector2<char>::const_reverse_iterator;
 
 #if DEL == 2
 #include "Dhelper.h"
@@ -43,9 +43,9 @@ constexpr bool IsSameCheck = IsSameS<T, U>::value;
 #pragma region +, +, += och --, -
 //also test most begin and end versions
 
-void TestIterPart_() {
-    Vector<char> s1("foxbar");
-    Vector<char> r1;
+void TestIterPart_2() {
+    Vector2<char> s1("foxbar");
+    Vector2<char> r1;
     for (auto i = s1.begin(); i != s1.end(); i++)
         r1.push_back(*i);
     assert(r1 == "foxbar");
@@ -73,9 +73,9 @@ void TestIterPart_() {
     assert(((it - 3) - it) == -3);
 }
 
-void TestIterPartC_() {
-    Vector<char> s1("foxbar");
-    Vector<char> r1;
+void TestIterPartC_2() {
+    Vector2<char> s1("foxbar");
+    Vector2<char> r1;
     for (auto i = s1.cbegin(); i != s1.cend(); i++)
         r1.push_back(*i);
     assert(r1 == "foxbar");
@@ -103,9 +103,9 @@ void TestIterPartC_() {
     assert(((it - 3) - it) == -3);
 }
 
-void TestIterPartR_() {
-    Vector<char> s1("foxbar");
-    Vector<char> r1;
+void TestIterPartR_2() {
+    Vector2<char> s1("foxbar");
+    Vector2<char> r1;
     for (auto i = s1.rbegin(); i != s1.rend(); i++)
         r1.push_back(*i);
     assert(r1 == "rabxof");
@@ -132,9 +132,9 @@ void TestIterPartR_() {
     assert(((it - 3) - it) == -3);
 }
 
-void TestIterPartCR_() {
-    Vector<char> s1("foxbar");
-    Vector<char> r1;
+void TestIterPartCR_2() {
+    Vector2<char> s1("foxbar");
+    Vector2<char> r1;
     for (auto i = s1.crbegin(); i != s1.crend(); i++)
         r1.push_back(*i);
     assert(r1 == "rabxof");
@@ -164,8 +164,8 @@ void TestIterPartCR_() {
 #pragma endregion +, +, += och --, -
 
 #pragma region relop
-void TestRelOp() {
-    Vector<char> Foo("Foo");
+void TestRelOp2() {
+    Vector2<char> Foo("Foo");
     {
         auto b = Foo.begin();
         auto a = b++;
@@ -207,8 +207,8 @@ void TestRelOp() {
 #pragma endregion relop
 
 #pragma region constr och assignment
-void TestConstrAssignm() {
-    Vector<char> v("foxbar");
+void TestConstrAssignm2() {
+    Vector2<char> v("foxbar");
     auto it = v.begin();
     auto cit = v.cbegin();
     auto rit = v.rbegin();
@@ -225,26 +225,26 @@ void TestConstrAssignm() {
     //rit = crit; //Ska inte gå
 
     //Constructor;
-    Vector<char>::iterator it2 = it;
+    Vector2<char>::iterator it2 = it;
     assert(&*it2 == &*it);
     //Vector<char>::const_iterator cit2 = it; //Krävs ej i Del1
     //Vector<char>::iterator it3 = cit;  //Ska inte gå
-    Vector<char>::const_iterator cit3 = cit;
+    Vector2<char>::const_iterator cit3 = cit;
     assert(&*cit3 == &*cit);
 
-    Vector<char>::reverse_iterator rit2 = rit;
+    Vector2<char>::reverse_iterator rit2 = rit;
     assert(&*rit2 == &*rit);
     //Vector<char>::const_reverse_iterator crit2 = rit; //Krävs ej i Del1
     //Vector<char>::reverse_iterator rit3 = crit;  //Ska inte gå
-    Vector<char>::const_reverse_iterator crit3 = crit;
+    Vector2<char>::const_reverse_iterator crit3 = crit;
     assert(&*crit3 == &*crit);
 }
 #pragma endregion constr och assignment
 
 #pragma region * -> []
-void TestAccess() {
-    Vector<char> Bar("BarBar");
-    const Vector<char> BarC("BarBar");
+void TestAccess2() {
+    Vector2<char> Bar("BarBar");
+    const Vector2<char> BarC("BarBar");
     {
         auto it = Bar.begin();
         assert(*it == 'B');
@@ -267,8 +267,8 @@ void TestAccess() {
         assert(*cit2 == 'r');
         IsSameCheck<const char&, decltype(*cit2)>;
     }
-    Vector<Dhelper> Dcont;
-    const Vector<Dhelper> DcontC;
+    Vector2<Dhelper> Dcont;
+    const Vector2<Dhelper> DcontC;
     Dcont.push_back(Dhelper(17));
     {
         auto i = Dcont.begin()->Test();
@@ -296,9 +296,9 @@ void random_shuffle(IT begin, IT end) {
     shuffle(begin, end, std::default_random_engine());
 }
 
-void TestIterInAlg() {
+void TestIterInAlg2() {
     static const int N = 26;
-    Vector<char> v;
+    Vector2<char> v;
     v.reserve(N);
     for (int i = 0; i < N; ++i) {
         v.push_back('a' + i);
@@ -316,9 +316,9 @@ void TestIterInAlg() {
     cout << v << endl;
 }
 
-void TestRevIterInAlg() {
+void TestRevIterInAlg2() {
     static const int N = 26;
-    Vector<char> v;
+    Vector2<char> v;
     v.reserve(N);
     for (int i = 0; i < N; ++i) {
         v.push_back('a' + i);
@@ -343,26 +343,26 @@ void TestIter2() {
     //Iteratorerna ska kunna göra:
     //-	*it, ++it, it++, (it+i), it[i], == och !=
     //also test most begin and end versions
-    TestIterPart_();
-    TestIterPartC_();
-    TestIterPartR_();
-    TestIterPartCR_();
+    TestIterPart_2();
+    TestIterPartC_2();
+    TestIterPartR_2();
+    TestIterPartCR_2();
 
     //Constructorer och assignment
-    TestConstrAssignm();
+    TestConstrAssignm2();
 
     //Test * ->
-    TestAccess();
+    TestAccess2();
 
     //Test ==, !=, <, ...
-    TestRelOp();
+    TestRelOp2();
 
     //typdefs för iterator, const_iterator,  reverse_iterator och const_revers_iterator
     //   tested with static_assert below
 
     //Prova att sortera
-    TestIterInAlg();
-    TestRevIterInAlg();
+    TestIterInAlg2();
+    TestRevIterInAlg2();
 
     cout << "\nTest för (Väl-)Godkänt Iterator klar\n";
 
@@ -393,19 +393,19 @@ struct CheckTypedefsConst {
 template struct CheckTypedefs<std::vector<int>::iterator>;
 template struct CheckTypedefsConst<std::vector<int>::const_iterator>;
 
-template struct CheckTypedefs<Vector<int>::iterator>;
-template struct CheckTypedefsConst<Vector<int>::const_iterator>;
-template struct CheckTypedefs<Vector<int>::reverse_iterator>;
-template struct CheckTypedefsConst<Vector<int>::const_reverse_iterator>;
+template struct CheckTypedefs<Vector2<int>::iterator>;
+template struct CheckTypedefsConst<Vector2<int>::const_iterator>;
+template struct CheckTypedefs<Vector2<int>::reverse_iterator>;
+template struct CheckTypedefsConst<Vector2<int>::const_reverse_iterator>;
 
 #pragma endregion Test of typedefs!
 
 #pragma region Test Begin/End types
-void TestTypeBeginEnd() {
-    Vector<char> Foo("Foo");
-    const Vector<char> FooC("Foo");
-    Vector<char> Bar("Bar");
-    const Vector<char> BarC("Bar");
+void TestTypeBeginEnd2() {
+    Vector2<char> Foo("Foo");
+    const Vector2<char> FooC("Foo");
+    Vector2<char> Bar("Bar");
+    const Vector2<char> BarC("Bar");
     IsSameFun<IT>::e(Foo.begin());
     IsSameFun<CIT>::e(FooC.begin());
     IsSameFun<CIT>::e(Foo.cbegin());
