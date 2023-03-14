@@ -12,6 +12,7 @@
 
 #include "Task.h"
 #include "Vector2.hpp"
+#include "DebugPrinting.h"
 
 #include <type_traits>
 #include <iostream>
@@ -52,8 +53,12 @@ void Task::RunTask6() const {
         << ", Level is: " << LEVEL << "\n\n";
 
     TestBasic2();
+    Println("Finished the basic tests");
     TestVector2();
+    Println("Finished the advanced vector tests");
     TestIter2();
+    Println("Finished the advanced iterator tests");
+
 
 #if DEL == 1
     new int; cout << "\ndet finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";

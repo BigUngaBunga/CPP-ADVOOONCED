@@ -2,6 +2,7 @@
 #define CHECK assert(Invariant())
 #include <cassert>
 #include <cstring>
+#include <algorithm>
 #include "String.h"
 #include <ostream>
 #include "Iterator.hpp"
@@ -50,17 +51,19 @@ public:
 
 	template<class Titerator>
 	Vector2(const size_t capacity, const Titerator& begin, const Titerator& end) :
-		currentCapacity(capacity), currentSize(end - begin), 
+		currentCapacity(capacity), currentSize(0), 
 		container(_allocator.allocate(capacity))
 	{
-		std::ranges::copy(begin, end, container);
+
+		//TODO fixa for_each loopen
+		std::for_each(begin, end, [&]() {new (container + currentSize++) T(*begin); });
 		CHECK;
 	}
 
 	explicit(false) Vector2(const char* other) : 
 		Vector2(strlen(other), other, other + strlen(other)){}
 
-	Vector2(const Vector2& other) : Vector2(other.size(), other.begin(), other.end()) {}
+	Vector2(const Vector2& other) : Vector2(other.size(), other.cbegin(), other.cend()) {}
 
 	Vector2(Vector2&& other) noexcept {
 		*this = std::move(other);

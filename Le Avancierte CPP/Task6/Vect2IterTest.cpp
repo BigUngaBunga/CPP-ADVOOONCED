@@ -5,10 +5,11 @@
 #include "Vector2.hpp"
 
 #include <iostream>
+#include<random>
+#include <cassert>
+#include "DebugPrinting.h"
 using std::cout;
 using std::endl;
-#include <cassert>
-#include<random>
 
 #pragma region help jox
 
@@ -344,25 +345,42 @@ void TestIter2() {
     //-	*it, ++it, it++, (it+i), it[i], == och !=
     //also test most begin and end versions
     TestIterPart_2();
+    FinishedTest("Regular iterator");
     TestIterPartC_2();
+    FinishedTest("Constant iterator");
+
     TestIterPartR_2();
+    FinishedTest("Reverse iterator");
+
     TestIterPartCR_2();
+    FinishedTest("Constant reverse iterator");
+
 
     //Constructorer och assignment
     TestConstrAssignm2();
+    FinishedTest("Constructors and assignment");
+
 
     //Test * ->
     TestAccess2();
+    FinishedTest("Access");
+
 
     //Test ==, !=, <, ...
     TestRelOp2();
+    FinishedTest("comparisons");
+
 
     //typdefs för iterator, const_iterator,  reverse_iterator och const_revers_iterator
     //   tested with static_assert below
 
     //Prova att sortera
     TestIterInAlg2();
+    FinishedTest("In algorithms");
+
     TestRevIterInAlg2();
+    FinishedTest("In algorithms 2 electric boogaloo");
+
 
     cout << "\nTest för (Väl-)Godkänt Iterator klar\n";
 

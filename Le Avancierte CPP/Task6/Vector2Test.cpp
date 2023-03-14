@@ -13,10 +13,11 @@
 //template class Vector2<int>; 
 
 #include <iostream>
-using std::cout;
-using std::endl;
 #include <cassert>
 #include <type_traits>
+#include "DebugPrinting.h"
+using std::cout;
+using std::endl;
 
 void TestRolOp2();
 void TestCapacity2();
@@ -134,6 +135,7 @@ void TestVGAssignment() {
     TestAss(&Vector2<Dhelper>::AssSimple, false);
     TestAss(&Vector2<Dhelper>::AssStrong, false);
     TestAss(&Vector2<Dhelper>::AssFast, true);
+    FinishedTest("VG assignment");
 }
 #endif
 
@@ -181,13 +183,16 @@ void TestAssignment() {
 }
 
 void TestVector2() {
+  
     {//Vector2<Dhelper>(char *)
+        Vector2<char> baz("Baz");
         Vector2<Dhelper> Foo("Foo");
         const Vector2<Dhelper> FooC("Foo");
         Vector2<Dhelper> Bar("Bar");
         const Vector2<Dhelper> BarC("Bar");
         CheckVec(Foo); CheckVec(FooC);
         CheckVec(Bar); CheckVec(BarC);
+        FinishedTest("Dhelper");
     }
     {//check empty vectors;
         Vector2<Dhelper> v1;
@@ -195,11 +200,14 @@ void TestVector2() {
         assert(v1.data() == nullptr);
         Vector2<Dhelper> v2(v1);
         assert(v2 == "");
+        FinishedTest("empty vectors");
     }
     {//Move constructor
         Vector2<Dhelper> a("foo");
         Vector2<Dhelper> b(std::move(a));
         assert(b == "foo" && a.data() == nullptr);
+        FinishedTest("move constructor");
+
     }
     {//Vector2<Dhelper>(Copy constructor)
         Vector2<Dhelper> v1("foo"); assert(v1 == "foo");
@@ -208,6 +216,8 @@ void TestVector2() {
 
         //-	~Vector2<Dhelper>() Kom ihåg destruktorn!
         delete new Vector2<Dhelper>("hej");
+        FinishedTest("copy constructor");
+
     }
 
 
@@ -229,6 +239,7 @@ void TestVector2() {
 //we test that we can do a push_back;
         Bar.push_back('x');
         assert(Bar.capacity() > 0);
+        FinishedTest("move assignment");
     }
 
     {//-	operator[](size_t i) som indexerar utan range check.
@@ -246,6 +257,8 @@ void TestVector2() {
         //-	operator[](size_t i) const.
         assert(IsConstOrConstRefFun(vecBarC[1]));
         assert(vecBarC[1] == 'a');
+        FinishedTest("indexing []");
+
     }
     {//-	at(size_t i) som indexerar med range check
         Vector2<Dhelper> vecBar("Bar");
@@ -280,6 +293,8 @@ void TestVector2() {
         assert(vecBar.at(1) == 'y');
         assert(vecBarC.at(1) == 'a');
         assert(IsConstOrConstRefFun(vecBarC.at(1)));
+        FinishedTest("Indexing at()");
+
     }
 
     // data
@@ -290,6 +305,7 @@ void TestVector2() {
         assert(vecBar.data() == &vecBar[0]);
         assert(!IsConstOrConstRefFun(*vecBar.data()));
         assert(IsConstOrConstRefFun(*vecBarC.data()));
+        FinishedTest("data");
     }
 
     //-	push_back(Dhelper c) lägger till ett tecken sist.
@@ -299,6 +315,8 @@ void TestVector2() {
 
         vecBar.push_back('a');
         assert(vecBar == "Bara");
+        FinishedTest("push_back");
+
     }
 
 
@@ -316,6 +334,8 @@ void TestVector2() {
         vecBar.resize(5);
         assert(buf == vecBar.data() && vecBar.capacity() >= 6 && vecBar.size() == 5);
         assert(vecBar[5].FLAG == DD);  //Is last item deconstructed?
+        FinishedTest("resize");
+
     }
     {//minitest push_back &&
         Vector2<Dhelper> vecBar("Bar");
@@ -336,11 +356,19 @@ void TestVector2() {
         auto bptr = Bar.data();
         swap(Foo, Bar);
         assert(fptr == Bar.data() && bptr == Foo.data());
+        FinishedTest("swap");
+
     }
 
     TestRolOp2();
+    FinishedTest("RolOp");
+
     TestCapacity2();
+    FinishedTest("capacity");
+
     TestPushBack2();
+    FinishedTest("PushBack");
+
 
 #ifdef VG_BETYG
     TestVGAssignment();
