@@ -59,17 +59,13 @@ void Task::RunTask6() const {
     TestIter2();
     Println("Finished the advanced iterator tests");
 
-
 #if DEL == 1
     new int; cout << "\ndet finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
 #elif DEL == 2
     Dalloc<double>().allocate(4);
-    cout << "det finns en minnesläcka i main, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
+    cout << "det finns en minnesläcka i Test6, avsiktligt!\n så ni kan se att er minnesläckstest fungerar\n";
 #else
     static_assert(false);
 #endif DEL
 }
-
-//#include "Dhelper.h"
-//bool Dhelper::checkDhelper{};
 

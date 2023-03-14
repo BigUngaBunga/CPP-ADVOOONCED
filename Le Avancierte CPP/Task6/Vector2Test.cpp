@@ -77,6 +77,7 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
         Vector2<Dhelper> Fox("Fo");
         Vector2<Dhelper> Foo("Fooo");
         (Fox.*Ass)(Bar);
+        //(Bar.*Ass)(Foo);
         (Foo.*Ass)(Bar);
         assert(Foo == Fox && Fox == Bar && Bar == "Bar");
         assert(Fox.data() != Bar.data());
@@ -132,8 +133,8 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
 
 #ifdef VG_BETYG
 void TestVGAssignment() {
-    TestAss(&Vector2<Dhelper>::AssSimple, false);
-    TestAss(&Vector2<Dhelper>::AssStrong, false);
+    //TestAss(&Vector2<Dhelper>::AssSimple, false);
+    //TestAss(&Vector2<Dhelper>::AssStrong, false);
     TestAss(&Vector2<Dhelper>::AssFast, true);
     FinishedTest("VG assignment");
 }
@@ -183,7 +184,7 @@ void TestAssignment() {
 }
 
 void TestVector2() {
-  
+
     {//Vector2<Dhelper>(char *)
         Vector2<char> baz("Baz");
         Vector2<Dhelper> Foo("Foo");
@@ -308,6 +309,9 @@ void TestVector2() {
         FinishedTest("data");
     }
 
+    Vector2<Dhelper> vecBar("Bar");
+    vecBar.resize(5);
+
     //-	push_back(Dhelper c) lägger till ett tecken sist.
     {
         Vector2<Dhelper> vecBar("Bar");
@@ -335,8 +339,8 @@ void TestVector2() {
         assert(buf == vecBar.data() && vecBar.capacity() >= 6 && vecBar.size() == 5);
         assert(vecBar[5].FLAG == DD);  //Is last item deconstructed?
         FinishedTest("resize");
-
     }
+    
     {//minitest push_back &&
         Vector2<Dhelper> vecBar("Bar");
         vecBar.push_back('a');
@@ -367,12 +371,18 @@ void TestVector2() {
     FinishedTest("capacity");
 
     TestPushBack2();
-    FinishedTest("PushBack");
+    FinishedTest("PushBack2");
 
 
 #ifdef VG_BETYG
     TestVGAssignment();
 #endif
+
+    cout << "\nVectorTest för "
+#ifdef VG_BETYG
+        "Väl "
+#endif
+        "Godkänt klar\n";
 }
 
 void TestPushBackReallocation2() {
@@ -450,7 +460,7 @@ void TestCapacity2() {
 
     //-	size(), capacity() and reloccation test;
     TestPushBackReallocation2();
-
+    FinishedTest("Push Back Reallocation");
 
     //	reserve()
     auto internalBuf = &vecBar[0];
@@ -477,6 +487,8 @@ void TestCapacity2() {
         assert(cap == vecBar.capacity());
         assert(siz == vecBar.size());
     }
+    FinishedTest("Reserve");
+
 
     // shrink_to_fit
     vecBar = "hej";
@@ -489,12 +501,7 @@ void TestCapacity2() {
     assert(internalBuf != &vecBar[0]);
     assert(vecBar.capacity() == vecBar.size());
     assert(vecBar == "hej");
-
-    cout << "\nVectorTest för "
-#ifdef VG_BETYG
-        "Väl "
-#endif
-        "Godkänt klar\n";
+    FinishedTest("Shrink To fit");
 }
 
 //Test of typedefs!

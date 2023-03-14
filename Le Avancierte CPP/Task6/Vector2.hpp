@@ -21,7 +21,6 @@ public:
 	using pointer = T*;
 	using const_pointer = const T*;
 	using allocator = Dalloc<T>;
-	//using allocator = std::allocator<T>;
 #pragma endregion
 
 
@@ -35,28 +34,49 @@ public:
 private:
 	static const size_type initialCapacity = 10;
 	size_type currentCapacity;
-	size_type currentSize;
-	pointer container;
+	size_type currentSize = 0;
+	pointer container = nullptr;
 	allocator _allocator;
+
+#pragma region Helper Functions
+	
+	template<class Titerator>
+	void CopyElements(const Titerator& begin, const Titerator& end) {
+		currentSize = 0;
+		std::for_each(begin, end, 
+			[&](auto& value) {new (container + currentSize++) T(std::move(value));});
+	}
+
+	template<class Titerator>
+	void DestructElements(const Titerator& begin, const Titerator& end) const {
+		std::for_each(begin, end,[](auto& value) {value.~T(); });
+	}
+
+	void DeallocateContainer() {
+		DestructElements(begin(), end());
+		_allocator.deallocate(container, currentCapacity);
+		currentCapacity = 0;
+	}
+#pragma endregion
+
+
 public:
 
 #pragma region Constructors and destructors
 
-	Vector2() noexcept : currentCapacity(0), currentSize(0), container() { }
+	Vector2() noexcept : currentCapacity(0){ }
 
 	~Vector2() noexcept {
 		CHECK;
-		_allocator.deallocate(container, currentCapacity);
+		DeallocateContainer();
 	}
 
 	template<class Titerator>
 	Vector2(const size_t capacity, const Titerator& begin, const Titerator& end) :
-		currentCapacity(capacity), currentSize(0), 
+		currentCapacity(capacity), 
 		container(_allocator.allocate(capacity))
 	{
-
-		//TODO fixa for_each loopen
-		std::for_each(begin, end, [&]() {new (container + currentSize++) T(*begin); });
+		CopyElements(begin, end);
 		CHECK;
 	}
 
@@ -72,34 +92,29 @@ public:
 #pragma endregion
 
 #pragma region Assignment
-	Vector2& AssSimple(const Vector2& other) {
-		auto temporary = Vector2(other);
+	
+	//O(n) tidskomplexitet, utrymmeskomplexitet(other.size), lättläslig
+	//Stark säkerhet, antingen ändras inget eller allt.
+	Vector2& AssStrong(const Vector2& other) {
+		Vector2 temporary(other);
 		swap(temporary);
 		return *this;
 	}
 
+	Vector2& AssSimple(const Vector2& other) {return AssStrong(other);}
+	//
+
+	//O(n) tidskomplexitet, värstafall utrymmeskomplexitet(other.size)
+	//allokerar bara nytt minne om other är större än capacity
+	//Enkel säkerhet, är alltid brukbar men tar bort sina element 
 	Vector2& AssFast(const Vector2& other) {
-		reserveDestructive(other.size());
-		std::ranges::copy(other.begin(), other.end(), container);
+		destructiveReserve(other.size());
+		CopyElements(other.begin(), other.end());
 		currentSize = other.size();
 		CHECK;
 		return *this;
 	}
 
-	Vector2& AssStrong(const Vector2& other) {
-		
-		Vector2 temporary;
-		try
-		{
-			temporary = Vector2(other);
-		}
-		catch (const std::bad_alloc& e)
-		{
-			throw e;
-		}
-		swap(temporary);
-		return *this;
-	}
 
 	Vector2& Ass(const Vector2& other) {
 		return (*this) = other;
@@ -108,7 +123,7 @@ public:
 	Vector2& operator=(const Vector2& other) { return AssFast(other); }
 
 	Vector2& operator=(Vector2&& other) noexcept {
-		_allocator.deallocate(container, currentCapacity);
+		DeallocateContainer();
 		container = std::move(other.container);
 		currentCapacity = std::move(other.currentCapacity);
 		currentSize = std::move(other.currentSize);
@@ -130,22 +145,21 @@ public:
 	}
 
 	void setCapacity(size_t newCapacity) {
-		T* temporaryData = container;
-		container = _allocator.allocate(newCapacity);
-		currentSize = newCapacity > currentSize ? currentSize : newCapacity;
-		std::copy(temporaryData, (temporaryData + currentSize), container);
-		_allocator.deallocate(temporaryData, currentCapacity);
-		currentCapacity = newCapacity;
+		auto endIterator = newCapacity >= currentSize ? end() : begin() + newCapacity;
+		auto temporary = Vector2(newCapacity, begin(), endIterator);
+		swap(temporary);
 		CHECK;
 	}
 
-	void reserveDestructive(size_t newCapacity) {
+	void destructiveReserve(size_t newCapacity) {
 		if (newCapacity > currentCapacity)
-			setCapacityDestructive(newCapacity);
+			destructiveSetCapacity(newCapacity);
+		else
+			DestructElements(begin(), end());
 	}
 
-	void setCapacityDestructive(size_t newCapacity) {
-		_allocator.deallocate(container, currentCapacity);
+	void destructiveSetCapacity(size_t newCapacity) {
+		DeallocateContainer();
 		container = _allocator.allocate(newCapacity);
 		currentSize = 0;
 		currentCapacity = newCapacity;
@@ -156,18 +170,17 @@ public:
 		if (newSize >= currentCapacity)
 			setCapacity(newSize * 2 + 1);
 
-		if (currentSize < newSize)
-		{
-			for (auto iterator = (begin() + currentSize); iterator < (begin() + newSize); iterator++) {
-				*iterator = T();
-			}
+		while (currentSize < newSize)
+			new(container + currentSize++) T{};
+		if (currentSize > newSize) {
+			for (auto i = newSize; i < currentSize; i++)
+				(container + i)->~T();
+			currentSize = newSize;
 		}
-		currentSize = newSize;
 		CHECK;
 	}
 	
 	void shrink_to_fit(){ setCapacity(currentSize); }
-
 
 	void ResizeIfTooSmall() {
 		if (currentSize >= currentCapacity) {
@@ -201,16 +214,10 @@ public:
 	T& operator[] (const size_t i) { return *(container + i); }
 	
 	const T& operator[] (size_t i) const { return *(container + i); }
-	
-	void push_back(const T& value) {
+
+	void push_back(T value) {
 		ResizeIfTooSmall();
-		container[currentSize++] = value;
-		CHECK;
-	}
-	
-	void push_back(T&& value) {
-		ResizeIfTooSmall();
-		container[currentSize++] = std::move(value);
+		new (container + currentSize++) T(std::move(value));
 		CHECK;
 	}
 
@@ -303,9 +310,6 @@ public:
 	}
 
 	friend void swap(Vector2& lhs, Vector2& rhs) noexcept {
-		/*auto temporaryVector(std::move(lhs));
-		lhs = std::move(rhs);
-		rhs = std::move(temporaryVector);*/
 		lhs.swap(rhs);
 	}
 #pragma endregion

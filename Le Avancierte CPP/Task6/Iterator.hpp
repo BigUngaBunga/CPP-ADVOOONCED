@@ -23,12 +23,12 @@ public:
 	reference operator[](size_t i) const noexcept { return data[i * direction]; }
 	
 	#pragma region movement
-	Iterator operator++(int change) noexcept {
+	Iterator operator++([[maybe_unused]]int change) noexcept {
 		pointer oldData = data;
 		move(1);
 		return Iterator(oldData);
 	}
-	Iterator operator--(int change) noexcept {
+	Iterator operator--([[maybe_unused]] int change) noexcept {
 		pointer oldData = data;
 		move(-1);
 		return Iterator(oldData);
