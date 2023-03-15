@@ -181,11 +181,9 @@ void TestBasic() {
         }
         {
             Vector<char>::const_iterator cit = foo.cbegin(); cit = foo.cend();
-            //cit = coo.begin(); cit = coo.end();
         }
         {
             Vector<char>::const_reverse_iterator cit = foo.crbegin(); cit = foo.crend();
-            //cit = coo.rbegin(); cit = coo.rend();
         }
 
         FinishedTest(10);

@@ -1,7 +1,7 @@
 #pragma once
 
 //Stop std::vector from checking to much
-#define _ITERATOR_DEBUG_LEVEL 0
+#define _ITERATOR_DEBUG_LEVEL 2
 
 #include <string>
 #include<cassert>

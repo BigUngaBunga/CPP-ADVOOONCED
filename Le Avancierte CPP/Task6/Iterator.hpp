@@ -10,7 +10,7 @@ public:
 	using reference = T&;
 	using iterator_category = std::random_access_iterator_tag;
 
-	Iterator(pointer _pointer) noexcept : data(_pointer) {}
+	explicit(false) Iterator(pointer _pointer) noexcept : data(_pointer) {}
 	Iterator(const Iterator<T, direction>& other) noexcept : data(other.data) {}
 	Iterator() noexcept : data(nullptr) {}
 	~Iterator() noexcept = default;

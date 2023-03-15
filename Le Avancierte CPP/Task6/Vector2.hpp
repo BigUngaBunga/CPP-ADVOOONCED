@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cstring>
 #include <algorithm>
-#include "String.h"
 #include <ostream>
 #include "Iterator.hpp"
 using std::ostream;
@@ -48,6 +47,15 @@ private:
 	}
 
 	template<class Titerator>
+	void MoveElements(const Titerator& begin, const Titerator& end) {
+		currentSize = 0;
+		for (auto iterator = begin; iterator < end; iterator++) {
+			new (container + currentSize++) T(std::move(*iterator));
+			iterator->~T();
+		}
+	}
+
+	template<class Titerator>
 	void DestructElements(const Titerator& begin, const Titerator& end) const {
 		std::for_each(begin, end,[](auto& value) {value.~T(); });
 	}
@@ -76,8 +84,15 @@ public:
 		currentCapacity(capacity), 
 		container(_allocator.allocate(capacity))
 	{
-		CopyElements(begin, end);
-		CHECK;
+		try
+		{
+			CopyElements(begin, end);
+			CHECK;
+		}
+		catch (const std::exception&)
+		{
+			DeallocateContainer();
+		}
 	}
 
 	explicit(false) Vector2(const char* other) : 
@@ -93,6 +108,38 @@ public:
 
 #pragma region Assignment
 	
+	void push_back(T value) {
+		ResizeIfTooSmall();
+		new (container + currentSize++) T(std::move(value));
+		CHECK;
+	}
+
+	void pop_back() {
+		if (Empty())
+			return;
+		ResizeIfTooBig();
+		--currentSize;
+		CHECK;
+	}
+
+	template<class... Args>
+	T& emplace_back(Args&& ... args) {
+		ResizeIfTooSmall();
+		return *(new (container + currentSize++) T(std::forward<Args>(args)...));
+	}
+
+	void swap(Vector2& other) noexcept {
+		auto temporaryData = data();
+		auto temporarySize = size();
+		auto temporaryCapacity = capacity();
+		container = other.data();
+		currentSize = other.size();
+		currentCapacity = other.capacity();
+		other.container = temporaryData;
+		other.currentSize = temporarySize;
+		other.currentCapacity = temporaryCapacity;
+	}
+
 	//O(n) tidskomplexitet, utrymmeskomplexitet(other.size), lättläslig
 	//Stark säkerhet, antingen ändras inget eller allt.
 	Vector2& AssStrong(const Vector2& other) {
@@ -167,8 +214,13 @@ public:
 	}
 
 	void resize(size_t newSize) {
-		if (newSize >= currentCapacity)
-			setCapacity(newSize * 2 + 1);
+		if (newSize >= currentCapacity) {
+			auto temporary = container;
+			container = _allocator.allocate(newSize);
+			MoveElements(temporary, temporary + size());
+			_allocator.deallocate(temporary, currentCapacity);
+			currentCapacity = newSize;
+		}
 
 		while (currentSize < newSize)
 			new(container + currentSize++) T{};
@@ -199,6 +251,9 @@ public:
 	size_t size() const noexcept { return currentSize; }
 	size_t capacity() const noexcept { return currentCapacity; }
 	bool Empty() const { return !(size() > 0); }
+
+	T* data() noexcept { return container; }
+	const T* data() const noexcept { return container; }
 #pragma endregion
 
 #pragma region Debug
@@ -211,29 +266,9 @@ public:
 #pragma endregion
 
 #pragma region Access
-	T& operator[] (const size_t i) { return *(container + i); }
+	T& operator[] (size_t i) noexcept { return *(container + i); }
 	
-	const T& operator[] (size_t i) const { return *(container + i); }
-
-	void push_back(T value) {
-		ResizeIfTooSmall();
-		new (container + currentSize++) T(std::move(value));
-		CHECK;
-	}
-
-	void pop_back() {
-		if (Empty())
-			return;
-		ResizeIfTooBig();
-		--currentSize;
-		CHECK;
-	}
-	
-	template<class... Args>
-	reference emplace_back(Args&& ... args) {
-		ResizeIfTooSmall();
-		return *(new (container + currentSize++) T(std::forward<Args>(args)...));
-	}
+	const T& operator[] (size_t i) const noexcept { return *(container + i); }
 
 	T& at(size_t i) {
 		if (i >= currentSize)
@@ -245,9 +280,6 @@ public:
 			throw std::out_of_range("boot too big");
 		return operator[](i);
 	}
-	
-	T* data() noexcept { return container; }
-	const T* data() const noexcept { return container; }
 #pragma endregion
 
 #pragma region iterators
@@ -286,8 +318,6 @@ public:
 			if (comparison != 0)
 				return comparison;
 		}
-
-
 		return lhs.size() <=> rhs.size();
 	}
 
@@ -295,18 +325,6 @@ public:
 		for (size_t i = 0; i < other.size(); ++i)
 			cout << other[i];
 		return cout;
-	}
-
-	void swap(Vector2& other) noexcept {
-		auto temporaryData = data();
-		auto temporarySize = size();
-		auto temporaryCapacity = capacity();
-		container = other.data();
-		currentSize = other.size();
-		currentCapacity = other.capacity();
-		other.container = temporaryData;
-		other.currentSize = temporarySize;
-		other.currentCapacity = temporaryCapacity;
 	}
 
 	friend void swap(Vector2& lhs, Vector2& rhs) noexcept {

@@ -500,6 +500,8 @@ void TestCapacity2() {
     vecBar.shrink_to_fit();
     assert(internalBuf != &vecBar[0]);
     assert(vecBar.capacity() == vecBar.size());
+    assert(vecBar.capacity() <= cap);
+    assert(vecBar.size() == siz);
     assert(vecBar == "hej");
     FinishedTest("Shrink To fit");
 }
