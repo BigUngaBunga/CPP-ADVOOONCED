@@ -14,6 +14,8 @@
 //Man behöver kunna se att listan har rätt innehåll
 //Därför så har vi två testfunktioner
 
+#include "Vector.hpp"
+#include "DebugPrinting.h"
 
 #include "TestLevel.h"
 
@@ -21,8 +23,6 @@
 #include <iostream>
 using std::cout;
 
-#include "Vector.hpp"
-#include "DebugPrinting.h"
 
 void FinishedTest(int testNumber);
 
