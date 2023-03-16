@@ -64,6 +64,7 @@ private:
 		DestructElements(begin(), end());
 		_allocator.deallocate(container, currentCapacity);
 		currentCapacity = 0;
+		currentSize = 0;
 	}
 #pragma endregion
 
@@ -148,8 +149,11 @@ public:
 		return *this;
 	}
 
-	Vector2& AssSimple(const Vector2& other) {return AssStrong(other);}
-	//
+	//Det absolut enklaste sättet jag kunde tänka mig
+	//Alternativet är att använda kopiera koden som skrevs i AssStrong
+	Vector2& AssSimple(const Vector2& other) {
+		return AssStrong(other);
+	}
 
 	//O(n) tidskomplexitet, värstafall utrymmeskomplexitet(other.size)
 	//allokerar bara nytt minne om other är större än capacity
@@ -157,7 +161,6 @@ public:
 	Vector2& AssFast(const Vector2& other) {
 		destructiveReserve(other.size());
 		CopyElements(other.begin(), other.end());
-		currentSize = other.size();
 		CHECK;
 		return *this;
 	}
@@ -208,7 +211,6 @@ public:
 	void destructiveSetCapacity(size_t newCapacity) {
 		DeallocateContainer();
 		container = _allocator.allocate(newCapacity);
-		currentSize = 0;
 		currentCapacity = newCapacity;
 		CHECK;
 	}
@@ -216,7 +218,7 @@ public:
 	void resize(size_t newSize) {
 		if (newSize >= currentCapacity) {
 			auto temporary = container;
-			container = _allocator.allocate(newSize);
+			container = _allocator.allocate(newSize * 2 + 1);
 			MoveElements(temporary, temporary + size());
 			_allocator.deallocate(temporary, currentCapacity);
 			currentCapacity = newSize;

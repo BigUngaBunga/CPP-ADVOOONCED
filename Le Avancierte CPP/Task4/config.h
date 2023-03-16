@@ -28,13 +28,13 @@
 /*
  Thread count
  */
-#define NBRTHREADS_AUTO
-//#define NBRTHREADS 8
+//#define NBRTHREADS_AUTO
+#define NBRTHREADS 32
 
 /*
  Tile size
  */
-#define TILESIZE 1024
+#define TILESIZE 64
 
 /*
  Filter type
@@ -45,15 +45,15 @@
  */
 //#define FILTER_GRAYSCALE
 //#define FILTER_INVERT
-//#define FILTER_BLUR
-#define FILTER_SOBEL
+#define FILTER_BLUR
+//#define FILTER_SOBEL
 
 /*
  Gauss kernel size (applies only to FILTER_BLUR)
  Larger kernels blur more and are more expensive.
  */
-#define GAUSS_KERNEL_4
-//#define GAUSS_KERNEL_12
+//#define GAUSS_KERNEL_4
+#define GAUSS_KERNEL_12
 
 /*
  Sobel cut-off intensity, range 0-255 (applies only to FILTER_SOBEL).
