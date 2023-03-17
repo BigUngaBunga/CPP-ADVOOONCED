@@ -180,7 +180,7 @@
     <ClInclude Include="Task5\ConstantMath.hpp" />
     <ClInclude Include="Task5\DynamicAllocator.hpp" />
     <ClInclude Include="Task6\Dalloc.hpp" />
-    <ClInclude Include="Task6\Dhelper.h" />
+    <ClInclude Include="Task6\Dhelper2.h" />
     <ClInclude Include="Task6\Iterator.hpp" />
     <ClInclude Include="Task6\TestLevel.h" />
     <ClInclude Include="Task6\Vector2.hpp" />

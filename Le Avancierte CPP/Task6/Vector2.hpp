@@ -218,7 +218,7 @@ public:
 	void resize(size_t newSize) {
 		if (newSize >= currentCapacity) {
 			auto temporary = container;
-			container = _allocator.allocate(newSize * 2 + 1);
+			container = _allocator.allocate(newSize);
 			MoveElements(temporary, temporary + size());
 			_allocator.deallocate(temporary, currentCapacity);
 			currentCapacity = newSize;

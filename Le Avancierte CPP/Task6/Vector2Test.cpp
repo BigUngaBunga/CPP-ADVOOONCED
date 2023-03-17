@@ -6,7 +6,7 @@
 
 #include "Vector2.hpp"
 
-#include "Dhelper.h"
+#include "Dhelper2.h"
 
 //Generates all functions declared
 //Uncomment this to check that all functions compiles.
@@ -45,7 +45,7 @@ void CheckVec(const Vector2<X>& v) {
         auto x = v[i];   // eller? X x(v[i]);
 }
 template<>
-void CheckVec<Dhelper>(const Vector2<Dhelper>& v) {
+void CheckVec<Dhelper2>(const Vector2<Dhelper2>& v) {
     assert(v.Invariant());
     assert(v.size() <= v.capacity());
     size_t i = 0;
@@ -57,8 +57,8 @@ void CheckVec<Dhelper>(const Vector2<Dhelper>& v) {
 
 //Test av push_back&&
 void TestPushBack2() {
-    Vector2<Dhelper> a;
-    Dhelper c;
+    Vector2<Dhelper2> a;
+    Dhelper2 c;
     a.reserve(4);
     CheckVec(a);
     a.push_back(c);
@@ -73,38 +73,38 @@ void TestPushBack2() {
 template<class T>
 void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient) {
     {
-        Vector2<Dhelper> Bar("Bar");
-        Vector2<Dhelper> Fox("Fo");
-        Vector2<Dhelper> Foo("Fooo");
+        Vector2<Dhelper2> Bar("Bar");
+        Vector2<Dhelper2> Fox("Fo");
+        Vector2<Dhelper2> Foo("Fooo");
         (Fox.*Ass)(Bar);
         //(Bar.*Ass)(Foo);
         (Foo.*Ass)(Bar);
         assert(Foo == Fox && Fox == Bar && Bar == "Bar");
         assert(Fox.data() != Bar.data());
-        Vector2<Dhelper> Tom;
+        Vector2<Dhelper2> Tom;
         (Tom.*Ass)(Fox); //Assignment to empty
         assert(Tom == Fox);
     }
     //Vector& as return value
     {
-        Vector2<Dhelper> Bar("Bar");
-        Vector2<Dhelper> Fox("Fox");
-        Vector2<Dhelper> Foo("Foo");
+        Vector2<Dhelper2> Bar("Bar");
+        Vector2<Dhelper2> Fox("Fox");
+        Vector2<Dhelper2> Foo("Foo");
         ((Foo.*Ass)(Fox).*Ass)(Bar);
         assert(Fox == "Fox" && Foo == Bar && Bar == "Bar");
     }
     //check different size and cpacity
     {
-        Vector2<Dhelper> Bar("Barf");
-        Vector2<Dhelper> Fox; Fox.reserve(3);
+        Vector2<Dhelper2> Bar("Barf");
+        Vector2<Dhelper2> Fox; Fox.reserve(3);
         auto buffert = Fox.data();
         (Fox.*Ass)(Bar);
         assert(Fox == Bar);
         assert(buffert != Fox.data());
     }
     {
-        Vector2<Dhelper> Bar("Barf");
-        Vector2<Dhelper> Fox; Fox.reserve(4);
+        Vector2<Dhelper2> Bar("Barf");
+        Vector2<Dhelper2> Fox; Fox.reserve(4);
         auto buffert = Fox.data();
         (Fox.*Ass)(Bar);
         assert(Fox == Bar);
@@ -112,8 +112,8 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
             assert(buffert == Fox.data());
     }
     {
-        Vector2<Dhelper> Bar("Barf");
-        Vector2<Dhelper> Fox; Fox.reserve(5);
+        Vector2<Dhelper2> Bar("Barf");
+        Vector2<Dhelper2> Fox; Fox.reserve(5);
         auto buffert = Fox.data();
         (Fox.*Ass)(Bar);
         assert(Fox == Bar);
@@ -122,8 +122,8 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
     }
     //use size and not capacity when allocating new space
     {
-        Vector2<Dhelper> Bar("BarBar");
-        Vector2<Dhelper> Fox("Fox");
+        Vector2<Dhelper2> Bar("BarBar");
+        Vector2<Dhelper2> Fox("Fox");
         Fox.shrink_to_fit();
         Bar.reserve(1000000LL);
         (Fox.*Ass)(Bar);
@@ -133,35 +133,35 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
 
 #ifdef VG_BETYG
 void TestVGAssignment() {
-    //TestAss(&Vector2<Dhelper>::AssSimple, false);
-    //TestAss(&Vector2<Dhelper>::AssStrong, false);
-    TestAss(&Vector2<Dhelper>::AssFast, true);
+    //TestAss(&Vector2<Dhelper2>::AssSimple, false);
+    //TestAss(&Vector2<Dhelper2>::AssStrong, false);
+    TestAss(&Vector2<Dhelper2>::AssFast, true);
     FinishedTest("VG assignment");
 }
 #endif
 
 void TestAssignment() {
-    TestAss(&Vector2<Dhelper>::Ass, false);
+    TestAss(&Vector2<Dhelper2>::Ass, false);
 
     //Kedje tilldelning
     {
-        Vector2<Dhelper> Bar("Bar");
-        Vector2<Dhelper> Fox("Fox");
-        Vector2<Dhelper> Foo("Foo");
+        Vector2<Dhelper2> Bar("Bar");
+        Vector2<Dhelper2> Fox("Fox");
+        Vector2<Dhelper2> Foo("Foo");
         Foo = Fox = Bar;
         assert(Foo == Fox && Fox == Bar && Bar == "Bar");
     }
     //Vector& as return value
     {
-        Vector2<Dhelper> Bar("Bar");
-        Vector2<Dhelper> Fox("Fox");
-        Vector2<Dhelper> Foo("Foo");
+        Vector2<Dhelper2> Bar("Bar");
+        Vector2<Dhelper2> Fox("Fox");
+        Vector2<Dhelper2> Foo("Foo");
         (Foo = Fox) = Bar;
         assert(Fox == "Fox" && Foo == Bar && Bar == "Bar");
     }
     {
         //	-	operator =(Sträng sträng)
-        Vector2<Dhelper> v2, v3;
+        Vector2<Dhelper2> v2, v3;
         v2 = "hej";
         v3 = "faxen";
         assert((v2 = v3) == v3);
@@ -175,7 +175,7 @@ void TestAssignment() {
         v3[1] = 'y'; assert(v2[1] == 'e');
     }
     {//Kedjat assignment
-        Vector2<Dhelper> v1("foo"), v2("bar"), v3("hej");
+        Vector2<Dhelper2> v1("foo"), v2("bar"), v3("hej");
         v3 = v2 = v1;
         assert(v3 == "foo");
         assert(v3 == v2);
@@ -185,38 +185,38 @@ void TestAssignment() {
 
 void TestVector2() {
 
-    {//Vector2<Dhelper>(char *)
+    {//Vector2<Dhelper2>(char *)
         Vector2<char> baz("Baz");
-        Vector2<Dhelper> Foo("Foo");
-        const Vector2<Dhelper> FooC("Foo");
-        Vector2<Dhelper> Bar("Bar");
-        const Vector2<Dhelper> BarC("Bar");
+        Vector2<Dhelper2> Foo("Foo");
+        const Vector2<Dhelper2> FooC("Foo");
+        Vector2<Dhelper2> Bar("Bar");
+        const Vector2<Dhelper2> BarC("Bar");
         CheckVec(Foo); CheckVec(FooC);
         CheckVec(Bar); CheckVec(BarC);
-        FinishedTest("Dhelper");
+        FinishedTest("Dhelper2");
     }
     {//check empty vectors;
-        Vector2<Dhelper> v1;
+        Vector2<Dhelper2> v1;
         assert(v1.capacity() == 0);
         assert(v1.data() == nullptr);
-        Vector2<Dhelper> v2(v1);
+        Vector2<Dhelper2> v2(v1);
         assert(v2 == "");
         FinishedTest("empty vectors");
     }
     {//Move constructor
-        Vector2<Dhelper> a("foo");
-        Vector2<Dhelper> b(std::move(a));
+        Vector2<Dhelper2> a("foo");
+        Vector2<Dhelper2> b(std::move(a));
         assert(b == "foo" && a.data() == nullptr);
         FinishedTest("move constructor");
 
     }
-    {//Vector2<Dhelper>(Copy constructor)
-        Vector2<Dhelper> v1("foo"); assert(v1 == "foo");
-        Vector2<Dhelper> v2(v1); assert(v2 == "foo");
-        Vector2<Dhelper> v3("bar");  assert(v3 == "bar");
+    {//Vector2<Dhelper2>(Copy constructor)
+        Vector2<Dhelper2> v1("foo"); assert(v1 == "foo");
+        Vector2<Dhelper2> v2(v1); assert(v2 == "foo");
+        Vector2<Dhelper2> v3("bar");  assert(v3 == "bar");
 
-        //-	~Vector2<Dhelper>() Kom ihåg destruktorn!
-        delete new Vector2<Dhelper>("hej");
+        //-	~Vector2<Dhelper2>() Kom ihåg destruktorn!
+        delete new Vector2<Dhelper2>("hej");
         FinishedTest("copy constructor");
 
     }
@@ -224,10 +224,10 @@ void TestVector2() {
 
 
     {// Move assignment
-        Vector2<Dhelper> Foo("Foo");
-        const Vector2<Dhelper> FooC("Foo");
-        Vector2<Dhelper> Bar("Bar");
-        const Vector2<Dhelper> BarC("Bar");
+        Vector2<Dhelper2> Foo("Foo");
+        const Vector2<Dhelper2> FooC("Foo");
+        Vector2<Dhelper2> Bar("Bar");
+        const Vector2<Dhelper2> BarC("Bar");
         CheckVec(Foo);
         CheckVec(Bar);
         Foo = std::move(Bar);
@@ -244,10 +244,10 @@ void TestVector2() {
     }
 
     {//-	operator[](size_t i) som indexerar utan range check.
-        Vector2<Dhelper> vecFoo("Foo");
-        const Vector2<Dhelper> vecCFoo("Foo");
-        Vector2<Dhelper> vecBar("Bar");
-        const Vector2<Dhelper> vecBarC("Bar");
+        Vector2<Dhelper2> vecFoo("Foo");
+        const Vector2<Dhelper2> vecCFoo("Foo");
+        Vector2<Dhelper2> vecBar("Bar");
+        const Vector2<Dhelper2> vecBarC("Bar");
 
         vecBar = "bar";
         vecBar[-1]; vecBar[1000];	//No error
@@ -262,8 +262,8 @@ void TestVector2() {
 
     }
     {//-	at(size_t i) som indexerar med range check
-        Vector2<Dhelper> vecBar("Bar");
-        const Vector2<Dhelper> vecBarC("Bar");
+        Vector2<Dhelper2> vecBar("Bar");
+        const Vector2<Dhelper2> vecBarC("Bar");
 
         try {
             vecBar.at(-1);
@@ -300,8 +300,8 @@ void TestVector2() {
 
     // data
     {
-        Vector2<Dhelper> vecBar("Bar");
-        const Vector2<Dhelper> vecBarC("Bar");
+        Vector2<Dhelper2> vecBar("Bar");
+        const Vector2<Dhelper2> vecBarC("Bar");
 
         assert(vecBar.data() == &vecBar[0]);
         assert(!IsConstOrConstRefFun(*vecBar.data()));
@@ -309,13 +309,13 @@ void TestVector2() {
         FinishedTest("data");
     }
 
-    Vector2<Dhelper> vecBar("Bar");
+    Vector2<Dhelper2> vecBar("Bar");
     vecBar.resize(5);
 
-    //-	push_back(Dhelper c) lägger till ett tecken sist.
+    //-	push_back(Dhelper2 c) lägger till ett tecken sist.
     {
-        Vector2<Dhelper> vecBar("Bar");
-        const Vector2<Dhelper> vecBarC("Bar");
+        Vector2<Dhelper2> vecBar("Bar");
+        const Vector2<Dhelper2> vecBarC("Bar");
 
         vecBar.push_back('a');
         assert(vecBar == "Bara");
@@ -326,8 +326,8 @@ void TestVector2() {
 
     // resize
     {
-        Vector2<Dhelper> vecBar("Bar");
-        const Vector2<Dhelper> vecBarC("Bar");
+        Vector2<Dhelper2> vecBar("Bar");
+        const Vector2<Dhelper2> vecBarC("Bar");
         //size up
         vecBar.shrink_to_fit();
         auto buf = vecBar.data();
@@ -342,7 +342,7 @@ void TestVector2() {
     }
     
     {//minitest push_back &&
-        Vector2<Dhelper> vecBar("Bar");
+        Vector2<Dhelper2> vecBar("Bar");
         vecBar.push_back('a');
         assert(vecBar == "Bara");
     }
@@ -351,8 +351,8 @@ void TestVector2() {
     //testas överallt!
 
     {//Swap
-        Vector2<Dhelper> Bar("Bar");
-        Vector2<Dhelper> Foo("Foo");
+        Vector2<Dhelper2> Bar("Bar");
+        Vector2<Dhelper2> Foo("Foo");
         swap(Bar, Foo);
         assert(Foo == "Bar" && Bar == "Foo");
         //Test for efficient swap!
@@ -386,7 +386,7 @@ void TestVector2() {
 }
 
 void TestPushBackReallocation2() {
-    Vector2<Dhelper> vec("hej");
+    Vector2<Dhelper2> vec("hej");
     assert(vec.size() <= vec.capacity());
     assert(vec.size() == 3);
     assert(vec == "hej");
@@ -423,10 +423,10 @@ void TestRel(const C& lhs, const C& rhs,
 #define RelTest(a, b, c, d)  a c b && !(a d b)
 
 void TestRolOp2() {
-    Vector2<Dhelper> vecAbcdef("Abcdef");
-    Vector2<Dhelper> vecBbcdef("Bbcdef");
-    Vector2<Dhelper> vecAbcdeF("AbcdeF");
-    Vector2<Dhelper> vecAbcdefg("Abcdefg");
+    Vector2<Dhelper2> vecAbcdef("Abcdef");
+    Vector2<Dhelper2> vecBbcdef("Bbcdef");
+    Vector2<Dhelper2> vecAbcdeF("AbcdeF");
+    Vector2<Dhelper2> vecAbcdefg("Abcdefg");
 
     { bool f = RelTest(vecAbcdef, vecAbcdef, == , != ); assert(f); }
     { bool f = RelTest(vecAbcdef, vecAbcdeF, != , == ); assert(f); }
@@ -444,9 +444,9 @@ void TestRolOp2() {
     { bool f = RelTest(vecAbcdef, vecBbcdef, <= , >= ); assert(f); }
     { bool f = RelTest(vecAbcdef, vecAbcdefg, <= , >= ); assert(f); }
 
-    Vector2<Dhelper> vecA("A");
-    Vector2<Dhelper> vecAxxx("Axxx");
-    Vector2<Dhelper> vecB("B");
+    Vector2<Dhelper2> vecA("A");
+    Vector2<Dhelper2> vecAxxx("Axxx");
+    Vector2<Dhelper2> vecB("B");
 
     { bool f = RelTest(vecA, vecAxxx, < , >= ); assert(f); }
     { bool f = RelTest(vecAxxx, vecA, > , <= ); assert(f); }
@@ -456,7 +456,7 @@ void TestRolOp2() {
 }
 
 void TestCapacity2() {
-    Vector2<Dhelper> vecBar("Bar");
+    Vector2<Dhelper2> vecBar("Bar");
 
     //-	size(), capacity() and reloccation test;
     TestPushBackReallocation2();

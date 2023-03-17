@@ -8,6 +8,7 @@
 #include<random>
 #include <cassert>
 #include "DebugPrinting.h"
+#include "Dhelper2.h"
 using std::cout;
 using std::endl;
 
@@ -19,7 +20,6 @@ using RIT = Vector2<char>::reverse_iterator;
 using CRIT = Vector2<char>::const_reverse_iterator;
 
 #if DEL == 2
-#include "Dhelper.h"
 #endif DEL
 
 template<class T>
@@ -268,9 +268,9 @@ void TestAccess2() {
         assert(*cit2 == 'r');
         IsSameCheck<const char&, decltype(*cit2)>;
     }
-    Vector2<Dhelper> Dcont;
-    const Vector2<Dhelper> DcontC;
-    Dcont.push_back(Dhelper(17));
+    Vector2<Dhelper2> Dcont;
+    const Vector2<Dhelper2> DcontC;
+    Dcont.push_back(Dhelper2(17));
     {
         auto i = Dcont.begin()->Test();
         auto ci = DcontC.begin()->Test();

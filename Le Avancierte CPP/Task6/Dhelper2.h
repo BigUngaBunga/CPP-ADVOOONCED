@@ -13,7 +13,7 @@ namespace {
     //DEL's value control the behavior (is there a default constructor or not)
     //We assume that unconstructed memory has a content <=0.
     // throws otherwise
-    // A Dhelper object has a char value and a status flag with values:
+    // A Dhelper2 object has a char value and a status flag with values:
     enum {
         NON = 1, //Not initialized at all
         DD, // Has been destroyed
@@ -35,7 +35,7 @@ namespace {
     //#define CA 7 // Copy assigned
     //#define MA 8 // Move assigned
 
-    struct Dhelper {
+    struct Dhelper2 {
         static std::string usedConstr;
         static bool checkDhelper;
         char flag;
@@ -71,11 +71,11 @@ namespace {
 
         operator char() const { return value; }
 
-        ~Dhelper() {
+        ~Dhelper2() {
             IsConstr();
             FLAG = DD;
         }
-        Dhelper() {
+        Dhelper2() {
             assert(FLAG <= DD); // Constructed twice!
             FLAG = CV;
             value = 0;
@@ -83,10 +83,10 @@ namespace {
             IsNotConstr(checkDhelper);
             flag = 2;
         }
-        Dhelper(bool) {
+        Dhelper2(bool) {
             assert(false);
         }
-        Dhelper(int v) {
+        Dhelper2(int v) {
             IsNotConstr();
             FLAG = CV;
             value = v;
@@ -94,7 +94,7 @@ namespace {
             IsNotConstr(checkDhelper);
             flag = 3;
         }
-        Dhelper(const Dhelper& other) {
+        Dhelper2(const Dhelper2& other) {
             assert(FLAG <= DD); // Constructed twice!
             FLAG = CC;
             value = other.value;
@@ -102,7 +102,7 @@ namespace {
             IsNotConstr(checkDhelper);
             flag = 4;
         }
-        Dhelper(Dhelper&& other) noexcept {
+        Dhelper2(Dhelper2&& other) noexcept {
             assert(IsNotConstr());
             assert(other.IsConstr());
             FLAG = MC;
@@ -110,7 +110,7 @@ namespace {
             value = other.value;
         }
         ////Not used
-        //Dhelper& Assign(const Dhelper& other, bool checkDhelper = true) {
+        //Dhelper2& Assign(const Dhelper2& other, bool checkDhelper = true) {
         //	value = other.value;
         //	usedConstr += "CA";
         //	IsConstr(checkDhelper);
@@ -118,7 +118,7 @@ namespace {
         //	return *this;
         //}
         ////Not used
-        //Dhelper& Assign(char v, bool checkDhelper = true) {
+        //Dhelper2& Assign(char v, bool checkDhelper = true) {
         //	value = v;
         //	usedConstr += "CA";
         //	IsConstr(checkDhelper);
@@ -126,7 +126,7 @@ namespace {
         //	return *this;
         //}
 
-        Dhelper& operator=(char v) {
+        Dhelper2& operator=(char v) {
             assert(FLAG > DD); // not constructed!
             FLAG = CA;
 
@@ -137,7 +137,7 @@ namespace {
             return *this;
         }
         //Used
-        Dhelper& operator=(const Dhelper& other) {
+        Dhelper2& operator=(const Dhelper2& other) {
             assert(FLAG > DD); // not constructed!
             FLAG = CA;
             value = other.value;
@@ -147,7 +147,7 @@ namespace {
             return *this;
         }
         ////Not used
-        //Dhelper& operator=(Dhelper&& other) noexcept {
+        //Dhelper2& operator=(Dhelper2&& other) noexcept {
         //    assert(FLAG > DD); // not constructed!
         //    FLAG = MA;
         //    value = other.value;
@@ -157,15 +157,15 @@ namespace {
         //    return *this;
         //}
         ////Not used
-        //friend bool operator==(const Dhelper& lhs, const Dhelper& rhs) {
+        //friend bool operator==(const Dhelper2& lhs, const Dhelper2& rhs) {
         //    assert(lhs.FLAG > DD && rhs.FLAG > DD); // Not constructed
         //    return lhs.value == rhs.value;
         //}
-        friend bool operator==(const Dhelper& lhs, char rhs) {
+        friend bool operator==(const Dhelper2& lhs, char rhs) {
             assert(lhs.FLAG > DD); // Not constructed!
             return lhs.value == rhs;
         }
-        friend bool operator!=(const Dhelper& lhs, const Dhelper& rhs) {
+        friend bool operator!=(const Dhelper2& lhs, const Dhelper2& rhs) {
             assert(lhs.FLAG > DD && rhs.FLAG > DD); // Not constructed!
             auto x = lhs.value != rhs.value;
             return x;
@@ -173,8 +173,8 @@ namespace {
 
     };
 
-    std::string Dhelper::usedConstr{};
-    bool Dhelper::checkDhelper{};
+    std::string Dhelper2::usedConstr{};
+    bool Dhelper2::checkDhelper{};
 
 }
 

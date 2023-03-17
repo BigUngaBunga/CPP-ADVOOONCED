@@ -171,7 +171,7 @@ VectorHack<T> Dalloc<T>::allocatedList;
 #undef deallocate
 #define deallocate(x, y) deallocate(x, y, __FILE__, __LINE__)
 
-#include "Dhelper.h"
+#include "Dhelper2.h"
 
 template<class T>
 bool CheckVector(PoolObj<T>* poolPtr) {
@@ -181,12 +181,12 @@ bool CheckVector(PoolObj<T>* poolPtr) {
     return true;
 }
 template<>
-bool CheckVector<Dhelper>(PoolObj<Dhelper>* poolPtr) {
+bool CheckVector<Dhelper2>(PoolObj<Dhelper2>* poolPtr) {
     if (poolPtr->deallocFile == "") {
         return ErrMegToUser(std::string("memory ") + poolPtr->AllocIn() + "was not deallocated!");
     }
     size_t n = poolPtr->n;
-    Dhelper* ptr = poolPtr->Get();
+    Dhelper2* ptr = poolPtr->Get();
     size_t i = 0;
     i = DD;
     i = NON;
