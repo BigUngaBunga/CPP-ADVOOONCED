@@ -108,6 +108,9 @@ namespace {
             FLAG = MC;
             other.FLAG = MF;
             value = other.value;
+            //TODO se om detta är rätt
+            flag = 6;
+            //
         }
         ////Not used
         //Dhelper2& Assign(const Dhelper2& other, bool checkDhelper = true) {

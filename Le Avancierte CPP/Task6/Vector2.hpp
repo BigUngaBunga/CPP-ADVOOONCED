@@ -41,27 +41,27 @@ private:
 	
 	template<class Titerator>
 	void CopyElements(const Titerator& begin, const Titerator& end) {
-		currentSize = 0;
-		std::for_each(begin, end, 
-			[&](auto& value) {new (container + currentSize++) T(std::move(value));});
+		std::for_each(begin, end,
+			[&](auto& value) {new (container + currentSize) T(std::move(value));
+			currentSize++; });
 	}
 
 	template<class Titerator>
 	void MoveElements(const Titerator& begin, const Titerator& end) {
-		currentSize = 0;
 		for (auto iterator = begin; iterator < end; iterator++) {
-			new (container + currentSize++) T(std::move(*iterator));
+			new (container + currentSize) T(std::move(*iterator));
+			currentSize++;
 			iterator->~T();
 		}
 	}
 
 	template<class Titerator>
-	void DestructElements(const Titerator& begin, const Titerator& end) const {
-		std::for_each(begin, end,[](auto& value) {value.~T(); });
+	void DestructElements(const Titerator& rbegin, const Titerator& rend) const {
+		std::for_each(rbegin, rend, [](auto& value) {value.~T(); });
 	}
 
 	void DeallocateContainer() {
-		DestructElements(begin(), end());
+		DestructElements(rbegin(), rend());
 		_allocator.deallocate(container, currentCapacity);
 		currentCapacity = 0;
 		currentSize = 0;
@@ -82,7 +82,7 @@ public:
 
 	template<class Titerator>
 	Vector2(const size_t capacity, const Titerator& begin, const Titerator& end) :
-		currentCapacity(capacity), 
+		currentCapacity(capacity),
 		container(_allocator.allocate(capacity))
 	{
 		try
@@ -150,28 +150,48 @@ public:
 	}
 
 	//Det absolut enklaste sättet jag kunde tänka mig
-	//Alternativet är att använda kopiera koden som skrevs i AssStrong
+	//Alternativet är att kopiera koden som skrevs i AssStrong
 	Vector2& AssSimple(const Vector2& other) {
 		return AssStrong(other);
 	}
 
 	//O(n) tidskomplexitet, värstafall utrymmeskomplexitet(other.size)
 	//allokerar bara nytt minne om other är större än capacity
-	//Enkel säkerhet, är alltid brukbar men tar bort sina element 
+	//Enkel säkerhet, är alltid brukbar. låter typen hantera kopiering så långt det går
 	Vector2& AssFast(const Vector2& other) {
-		destructiveReserve(other.size());
-		CopyElements(other.begin(), other.end());
-		if (other.size() > size())
-		{
-			CopyElement(other.begin(), other.begin + size());
+		if (other.size() > capacity())
+			fastSetCapacity(other.size());
 
+		if (size() < other.size())
+		{
+			auto copyIterator = other.begin();
+			for (auto iterator = begin(); iterator < end(); iterator++)
+			{
+				*iterator = *copyIterator;
+				++copyIterator;
+			}
+			size_t sizey = size();
+			auto begin = other.begin() + sizey;
+			auto end = other.end();
+			CopyElements(begin, end);
+			currentSize = other.size();
 		}
+		else {
+			auto copyIterator = begin();
+			for (auto iterator = other.begin(); iterator < other.end(); iterator++)
+			{
+				*copyIterator = *iterator;
+				++copyIterator;
+			}
+			size_t sizeDifference = size() - other.size();
+			DestructElements(rbegin() , rbegin() + sizeDifference);
+			currentSize = other.size();
+		}
+
 
 		CHECK;
 		return *this;
 	}
-	//TODO ändra så att man bara tilldelar, inte dekonstruerar och sedan konstruerar
-	//
 
 	Vector2& Ass(const Vector2& other) {
 		return (*this) = other;
@@ -208,27 +228,19 @@ public:
 		CHECK;
 	}
 
-	void destructiveReserve(size_t newCapacity) {
-		if (newCapacity > currentCapacity)
-			destructiveSetCapacity(newCapacity);
-		else
-			DestructElements(begin(), end());
-	}
-
-	void destructiveSetCapacity(size_t newCapacity) {
-		DeallocateContainer();
+	void fastSetCapacity(size_t newCapacity) {
+		auto temporary = container;
 		container = _allocator.allocate(newCapacity);
+		size_t size = currentSize;
+		currentSize = 0;
+		MoveElements(temporary, temporary + size);
+		_allocator.deallocate(temporary, currentCapacity);
 		currentCapacity = newCapacity;
-		CHECK;
 	}
-
+	
 	void resize(size_t newSize) {
-		if (newSize >= currentCapacity) {
-			auto temporary = container;
-			container = _allocator.allocate(newSize);
-			MoveElements(temporary, temporary + size());
-			_allocator.deallocate(temporary, currentCapacity);
-			currentCapacity = newSize;
+		if (newSize > currentCapacity) {
+			fastSetCapacity(newSize);
 		}
 
 		while (currentSize < newSize) {

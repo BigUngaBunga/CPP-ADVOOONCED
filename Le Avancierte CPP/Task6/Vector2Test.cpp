@@ -77,7 +77,6 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
         Vector2<Dhelper2> Fox("Fo");
         Vector2<Dhelper2> Foo("Fooo");
         (Fox.*Ass)(Bar);
-        //(Bar.*Ass)(Foo);
         (Foo.*Ass)(Bar);
         assert(Foo == Fox && Fox == Bar && Bar == "Bar");
         assert(Fox.data() != Bar.data());
@@ -133,8 +132,11 @@ void TestAss(Vector2<T>& (Vector2<T>::* Ass)(const Vector2<T>&), bool Efficient)
 
 #ifdef VG_BETYG
 void TestVGAssignment() {
-    //TestAss(&Vector2<Dhelper2>::AssSimple, false);
-    //TestAss(&Vector2<Dhelper2>::AssStrong, false);
+    auto blerg = Dhelper2();
+    auto sperg = Dhelper2('g');
+    
+    TestAss(&Vector2<Dhelper2>::AssSimple, false);
+    TestAss(&Vector2<Dhelper2>::AssStrong, false);
     TestAss(&Vector2<Dhelper2>::AssFast, true);
     FinishedTest("VG assignment");
 }
