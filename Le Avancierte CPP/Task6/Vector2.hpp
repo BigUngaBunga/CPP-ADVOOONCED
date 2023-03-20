@@ -108,8 +108,8 @@ public:
 #pragma endregion
 
 #pragma region Assignment
-	
-	void push_back(T value) {
+	template<class U>
+	void push_back(U value) {
 		ResizeIfTooSmall();
 		new (container + currentSize++) T(std::move(value));
 		CHECK;
@@ -161,10 +161,17 @@ public:
 	Vector2& AssFast(const Vector2& other) {
 		destructiveReserve(other.size());
 		CopyElements(other.begin(), other.end());
+		if (other.size() > size())
+		{
+			CopyElement(other.begin(), other.begin + size());
+
+		}
+
 		CHECK;
 		return *this;
 	}
-
+	//TODO ändra så att man bara tilldelar, inte dekonstruerar och sedan konstruerar
+	//
 
 	Vector2& Ass(const Vector2& other) {
 		return (*this) = other;
@@ -224,8 +231,10 @@ public:
 			currentCapacity = newSize;
 		}
 
-		while (currentSize < newSize)
-			new(container + currentSize++) T{};
+		while (currentSize < newSize) {
+				new(container + currentSize) T{};
+				++currentSize;
+		}
 		if (currentSize > newSize) {
 			for (auto i = newSize; i < currentSize; i++)
 				(container + i)->~T();
